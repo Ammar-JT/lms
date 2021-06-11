@@ -64,9 +64,14 @@ this will install the ui for auth and also vue.js:
 -first, make a users using the UserFactory (uncomment the databaseSeeder run function) and seed:
                 php artisan db:seed
 
+- most of the user authentication function is in AuthenticatesUsers.php, in most cases we're
+  .. gonna override a methods form this class, next point i will show you how to do that
+
 - go to AuthenticatesUsers.php (which imported in LoginController.php) and cut authenticated()
-  .. and paste it in LoginController to override the method
-- with that been set, you change the loggin system from vue base to ajax base
+  .. and paste it in LoginController to override the method,
+  .. and that's how you override a user auth function in laravel
+
+- inside authenticated(),, go and change the loggin system from vue base to ajax base (i did it, go and see it)
 
 - in app.blade.php.. use theSaas theme instead of the default template + modify the welcome.blade scripts
 
@@ -108,6 +113,12 @@ this will install the ui for auth and also vue.js:
 */
 
 
+//------------------------------------------------------------------------------------------------
+//     >>>> npm run watch <<<< : for real time monitoring insted of : >>>> npm run dev <<<<
+//------------------------------------------------------------------------------------------------
+
+
+
 
 //---------------------------------------------------
 //      refreshing current page after login + 
@@ -117,7 +128,73 @@ this will install the ui for auth and also vue.js:
 
 - in Login.vue .. using the axios method, make the page relode using js if the response was succeful
 
+- if npm run dev desn't update the ui, the problem actually is in the browser, click
+      alt + f5
 
+- if you put email+password and click login, we want to disable the button while it's loading
+  .. to do that go to the same function isValidLoginForm() in Login.vue and put 
+      && !this.loading
+  .. and in the begining of attemptLogin() : 
+      this.loading = true
+  .. and in the data(): 
+      loading: false
+  
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//      custom exceptions in laravel (custom error) + override another AuthenticatesUsers{} function (sendFailedLoginResponse())
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- Now, if the credintials is correct, login gonna works perfectly,
+  .. but if it's wrong then we have to handle the error that been catched by 
+  .. the axios function, which also been sent from sendFailedLoginResponse() 
+  .. function of the great auth class AuthenticatesUsers{}, so, our mission here is to
+      - make an excpetion response AuthFailedException{} class 
+      - overide sendFailedLoginResponse() in loginController  
+      - throw  the AuthFailedException{} inside the overrided function
+
+- make app/Exceptions/AuthFailedException.php file ,,, here is the docs for that: 
+      https://laravel.com/docs/8.x/errors#renderable-exceptions
+
+- do the following in the render() function: 
+      return response()->json([
+            'message' => 'These credintials do not match our records'
+        ],422); 
+
+
+
+- now go to AuthenticatesUsers{} and cut sendFailedLoginResponse() and paste it in LoginController
+  .. to override the exception that been recieved when the login failed
+
+- change the throw new ValidationException to throw new AuthFailedException (which is the one you made)
+
+  
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//      Display errors using vue + ajax instead of using laravel
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- make a data() array in Login.vue called errors:[] 
+
+- push an error to it when the axios catch an error in Login.vue
+
+- display the error messages in Login.vue, using  v-if function + v-for loop through errors + alert
+
+
+
+
+
+
+
+
+  
 */
 
 

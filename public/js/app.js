@@ -1886,6 +1886,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   mounted: function mounted() {
     console.log('Component mounted.');
@@ -1894,7 +1902,9 @@ __webpack_require__.r(__webpack_exports__);
     return {
       email: '',
       password: '',
-      remember: true
+      remember: true,
+      loading: false,
+      errors: []
     };
   },
   methods: {
@@ -1905,14 +1915,38 @@ __webpack_require__.r(__webpack_exports__);
         return false;
       }
     },
-    attemptLogin: function attemptLogin() {//this like any ajax function, will send a request >>>> axios.post('/',{}) <<<<,
+    attemptLogin: function attemptLogin() {
+      var _this = this;
+
+      //if true, then the login button will be disabled
+      this.loading = true; //this like any ajax function, will send a request >>>> axios.post('/',{}) <<<<,
       //..then listen to the respone >>>> .then(resp=>{}) <<<< that came from the server
       //.. then it will catch an error if exist
+
+      axios.post('/login', {
+        email: this.email,
+        password: this.password,
+        remember: this.remember
+      }).then(function (resp) {
+        console.log(resp);
+        location.reload();
+      })["catch"](function (error) {
+        _this.loading = false;
+        console.log(error);
+
+        if (error.response.status == 422) {
+          _this.errors.push("we couldn't verify you account details");
+        } else {
+          //422 means everthings went right, but the credintials of the user is not correct,
+          //.. that's why we putted else for the other cases: 
+          _this.errors.push("Something went wrong, please refresh the page and try again");
+        }
+      });
     }
   },
   computed: {
     isValidLoginForm: function isValidLoginForm() {
-      return this.emailIsValid() && this.password;
+      return this.emailIsValid() && this.password && !this.loading;
     }
   }
 });
@@ -37499,6 +37533,32 @@ var render = function() {
             _c("br"),
             _vm._v(" "),
             _c("form", [
+              _vm.errors.length > 0
+                ? _c(
+                    "ul",
+                    { staticClass: "list-group " },
+                    _vm._l(_vm.errors, function(error) {
+                      return _c(
+                        "li",
+                        {
+                          key: _vm.errors.indexOf(error),
+                          staticClass: "list-group-item"
+                        },
+                        [
+                          _c("div", { staticClass: "alert alert-danger" }, [
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(error) +
+                                "\n                        "
+                            )
+                          ])
+                        ]
+                      )
+                    }),
+                    0
+                  )
+                : _vm._e(),
+              _vm._v(" "),
               _c("div", { staticClass: "form-group" }, [
                 _c("input", {
                   directives: [

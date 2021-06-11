@@ -6,6 +6,14 @@
                 <h5 class="text-uppercase text-center">Login</h5>
                 <br><br>
                 <form>
+                    <ul class="list-group " v-if="errors.length>0">
+                        <!-- :key="errors.indexOf(error)" <<<< just to remove the error -->
+                        <li class="list-group-item" v-for="error in errors" :key="errors.indexOf(error)">
+                            <div class="alert alert-danger">
+                                {{error}}
+                            </div>
+                        </li>
+                    </ul>
                     <div class="form-group">
                         <input type="text" class="form-control" v-model="email" placeholder="Email">
                     </div>
@@ -48,7 +56,9 @@
             return {
                 email: '',
                 password: '',
-                remember: true
+                remember: true,
+                loading: false,
+                errors: []
             }
         },
         methods:{
@@ -60,16 +70,37 @@
                 }
             },
             attemptLogin(){
+
+                //if true, then the login button will be disabled
+                this.loading = true
+
                 //this like any ajax function, will send a request >>>> axios.post('/',{}) <<<<,
                 //..then listen to the respone >>>> .then(resp=>{}) <<<< that came from the server
                 //.. then it will catch an error if exist
+                axios.post('/login',{
+                    email: this.email, password: this.password, remember: this.remember
+                }).then(resp => {
+                    console.log(resp)
+                    location.reload()
+                }).catch(error => {
+                    this.loading = false
+                    console.log(error)
 
-               
+                    if(error.response.status == 422){
+                        this.errors.push("we couldn't verify you account details")
+                    }else{ 
+                        //422 means everthings went right, but the credintials of the user is not correct,
+                        //.. that's why we putted else for the other cases: 
+                        this.errors.push("Something went wrong, please refresh the page and try again")
+
+
+                    }
+                })
             }
         },
         computed:{
             isValidLoginForm(){
-                return this.emailIsValid() && this.password
+                return this.emailIsValid() && this.password && !this.loading
             }
         }
     }
