@@ -64,15 +64,7 @@
                 //..then listen to the respone >>>> .then(resp=>{}) <<<< that came from the server
                 //.. then it will catch an error if exist
 
-                axios.post('/login', {
-                    email: this.email,
-                    password: this.password,
-                    remember: this.remember
-                }).then(resp => {
-                    console.log(resp)
-                }).catch(error => {
-                    console.log(error)
-                })
+               
             }
         },
         computed:{

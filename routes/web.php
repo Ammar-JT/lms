@@ -18,6 +18,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::get('/logout', function(){auth()->logout();});
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -93,7 +94,28 @@ this will install the ui for auth and also vue.js:
   ..  method to take care of the validation of the login form
 
 - import axios in the Login component to use ajax so we can deal with http request without
-  .. refreshing the page
+  .. refreshing the page.. and use it!
+
+- make a logout route: 
+    Route::get('/logout', function(){
+      auth()->logout();
+    });
+
+- now login is successful, but it won't redirect you to
+  .. another page + current page wont refresh + ui still not set up
+
+
+*/
+
+
+
+//---------------------------------------------------
+//      refreshing current page after login + 
+//---------------------------------------------------
+/*
+- make an 'ok' response using response()->json in LoginController using the overrided method authenticated()
+
+- in Login.vue .. using the axios method, make the page relode using js if the response was succeful
 
 
 */

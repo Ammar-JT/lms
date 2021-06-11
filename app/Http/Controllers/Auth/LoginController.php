@@ -50,6 +50,18 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+        //lets flash a session if successful login: 
+        session()->flash('success', 'Successfully logged in');
+
+        //now, if you're making an api, there is a function comes from controller class: 
+                // return $this->sendSuccesResp();
+        //..which is composite a whole api resopone including status and so on
+        //.. but here we will use this method cuz once you send 'ok' vueJs will know
+        //.. that this user is successfully logged in:
+        return response()->json([
+            'status' => 'ok'
+        ]);
+        
         //test if laravel really call this function when login is successful
         return 'login - successful';
     }

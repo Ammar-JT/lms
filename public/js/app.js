@@ -1905,19 +1905,9 @@ __webpack_require__.r(__webpack_exports__);
         return false;
       }
     },
-    attemptLogin: function attemptLogin() {
-      //this like any ajax function, will send a request >>>> axios.post('/',{}) <<<<,
+    attemptLogin: function attemptLogin() {//this like any ajax function, will send a request >>>> axios.post('/',{}) <<<<,
       //..then listen to the respone >>>> .then(resp=>{}) <<<< that came from the server
       //.. then it will catch an error if exist
-      axios.post('/login', {
-        email: this.email,
-        password: this.password,
-        remember: this.remember
-      }).then(function (resp) {
-        console.log(resp);
-      })["catch"](function (error) {
-        console.log(error);
-      });
     }
   },
   computed: {
