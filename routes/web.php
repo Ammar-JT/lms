@@ -144,7 +144,7 @@ this will install the ui for auth and also vue.js:
 
 
 //---------------------------------------------------------------------------------------------------------
-//      custom exceptions in laravel (custom error) + override another AuthenticatesUsers{} function (sendFailedLoginResponse())
+//      custom exceptions in laravel (custom error message) + override another AuthenticatesUsers{} function (sendFailedLoginResponse())
 //---------------------------------------------------------------------------------------------------------
 /*
 
@@ -152,7 +152,7 @@ this will install the ui for auth and also vue.js:
   .. but if it's wrong then we have to handle the error that been catched by 
   .. the axios function, which also been sent from sendFailedLoginResponse() 
   .. function of the great auth class AuthenticatesUsers{}, so, our mission here is to
-      - make an excpetion response AuthFailedException{} class 
+      - make an excpetion response in AuthFailedException{} class 
       - overide sendFailedLoginResponse() in loginController  
       - throw  the AuthFailedException{} inside the overrided function
 
@@ -160,9 +160,14 @@ this will install the ui for auth and also vue.js:
       https://laravel.com/docs/8.x/errors#renderable-exceptions
 
 - do the following in the render() function: 
-      return response()->json([
-            'message' => 'These credintials do not match our records'
-        ],422); 
+          return response()->json([
+                'message' => 'These credintials do not match our records'
+            ],422); 
+  notice we didn't use:
+          throw ValidationException::withMessage([])
+  .. cuz the validation exception is a string stored in a session, and we don't want that
+  .. We want a json repsonse so that we can recieve it and use the message inside it
+  .. in our custom login form
 
 
 
@@ -177,7 +182,7 @@ this will install the ui for auth and also vue.js:
 
 
 //---------------------------------------------------------------------------------------------------------
-//      Display errors using vue + ajax instead of using laravel
+//      Display errors messages using vue + ajax instead of using laravel
 //---------------------------------------------------------------------------------------------------------
 /*
 
@@ -188,14 +193,103 @@ this will install the ui for auth and also vue.js:
 - display the error messages in Login.vue, using  v-if function + v-for loop through errors + alert
 
 
-
-
-
-
-
-
-  
 */
 
+
+//---------------------------------------------------------------------------------------------------------
+//          LoginTest (Why? cuz we customize the login functions it!)
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- make a new test: 
+      php artisan make:test LoginTest
+- make the function: 
+      test_a_user_receives_correct_message_when_passing_in_wrong_credentials()
+- fill it up with the magical testing function
+
+- now, testing won't work until you use RefreshDatabase trait, so use it!
+
+- but the problem here that if we use it, it will refresh the db entirly!!
+  .. to prevent that we will use a db connection for the testing only,
+  .. to do that you have to modify phpunit file, put this: 
+        <server name="DB_CONNECTION" value="testing"/>
+        <server name="DB_DATABASE" value=":memory:"/>
+  then go to config/database.php and do this: 
+        'testing' => [
+            'driver' => 'sqlite',
+            'database' => database_path('testing.sqlite'),
+            'prefix' => ''
+        ],
+  and don't forget to make the database اصلا:
+        touch database/testing.sqlite
+
+- Now, do: 
+    ./vendor/bin/phpunit
+  or you can do only the LoginTest: 
+    ./vendor/bin/phpunit --filter LoginTest
+
+- Successful!!!
+
+---------
+
+- We made a test to assert that the user receive an error message if login no successful.
+  .. now we want to make sure the respone is correct if the user logged in successfully: 
+        test_correct_response_after_user_logs_in()
+- fill it with the test functions
+
+- to make test for it only just do: 
+      ./vendor/bin/phpunit --filter test_correct_response_after_user_logs_in
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//              Customize Regiseration with Test Driven Development
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- copy the registeration template to yours and modify it so it contains only: name + email + pass
+
+- in registerContrller{} when controller receive the registration, the user must created with 
+  .. username also,, we will do that using the name text, so we will make slug of the name to make username
+
+- make a test: 
+      php artisan make:test RegistrationTest
+  make the function: 
+      test_a_user_has_a_default_username_after_registration()
+  fill it.
+
+- Do the test, it will gives you an error cuz username is not sumbitted in the controller,
+
+- Fix it with Str::slug in the RegisterController + in User Factory 
+  and in the user migration, add a unique username column
+
+- don't forget use RefreshDatabase; in the RegistrationTest, now run the test!!
+
+- Successful!!!
+
+------------------------
+- we want to test_an_email_is_sent_to_newly_registered_users(), so make this function in the RegistrationTest
+
+- fill it, then create an email: 
+      php artisan make:mail ConfirmYourEmail --markdown="emails.confirm-confirm-your-email"
+
+- now import this ConfirmYourEmail in the RegisterController and in the RegistraionTest
+
+- im very tired and i don't understood anything do the test, but do the test: 
+
+- Successful!!
+*/
+
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//              Customize Regiseration with Test Driven Development
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- 
+*/
 
 

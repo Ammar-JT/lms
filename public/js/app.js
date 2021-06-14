@@ -1918,7 +1918,10 @@ __webpack_require__.r(__webpack_exports__);
     attemptLogin: function attemptLogin() {
       var _this = this;
 
-      //if true, then the login button will be disabled
+      //this means if user has unsuccessful login more than one time, 
+      //..the list of messages won't be redundant: 
+      this.errors = []; //if true, then the login button will be disabled
+
       this.loading = true; //this like any ajax function, will send a request >>>> axios.post('/',{}) <<<<,
       //..then listen to the respone >>>> .then(resp=>{}) <<<< that came from the server
       //.. then it will catch an error if exist
@@ -1935,7 +1938,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
 
         if (error.response.status == 422) {
-          _this.errors.push("we couldn't verify you account details");
+          _this.errors.push("we couldn't verify your account details");
         } else {
           //422 means everthings went right, but the credintials of the user is not correct,
           //.. that's why we putted else for the other cases: 

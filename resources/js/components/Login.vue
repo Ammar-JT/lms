@@ -70,7 +70,10 @@
                 }
             },
             attemptLogin(){
-
+                //this means if user has unsuccessful login more than one time, 
+                //..the list of messages won't be redundant: 
+                this.errors = []
+                
                 //if true, then the login button will be disabled
                 this.loading = true
 
@@ -87,7 +90,7 @@
                     console.log(error)
 
                     if(error.response.status == 422){
-                        this.errors.push("we couldn't verify you account details")
+                        this.errors.push("we couldn't verify your account details")
                     }else{ 
                         //422 means everthings went right, but the credintials of the user is not correct,
                         //.. that's why we putted else for the other cases: 
