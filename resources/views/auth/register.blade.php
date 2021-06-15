@@ -27,7 +27,7 @@
       <h5 class="text-uppercase text-center">Register</h5>
       <br><br>
 
-      <form class="form-type-material" method="POST" action="/register">
+      <form class="form-type-material" method="POST" action="{{ route('register') }}">
         @csrf
         <div class="form-group">
           <input type="text" class="form-control" name="name" placeholder="Full Name">

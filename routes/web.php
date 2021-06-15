@@ -22,7 +22,7 @@ Route::get('/logout', function(){auth()->logout();});
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-
+Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::class, 'index'])->name('confirm-email');
 
 
 
@@ -272,7 +272,7 @@ this will install the ui for auth and also vue.js:
 - we want to test_an_email_is_sent_to_newly_registered_users(), so make this function in the RegistrationTest
 
 - fill it, then create an email: 
-      php artisan make:mail ConfirmYourEmail --markdown="emails.confirm-confirm-your-email"
+      php artisan make:mail ConfirmYourEmail --markdown="emails.confirm-your-email"
 
 - now import this ConfirmYourEmail in the RegisterController and in the RegistraionTest
 
@@ -285,11 +285,84 @@ this will install the ui for auth and also vue.js:
 
 
 //---------------------------------------------------------------------------------------------------------
-//              Customize Regiseration with Test Driven Development
+//        Customize Regiseration with Test Driven Development: Test if the use is verified or not
+//                      Laravel 8: don't use this, use 'email_verified_at' instead.s
+//---------------------------------------------------------------------------------------------------------
+/*
+- In Laravel 8  don't use this, cuz in laravel 8 there is 'email_verified_at' column
+  ..and you can use it instead of this, read the document to know how to use it.
+
+- make a function : 
+      test_a_user_has_a_token_after_registration()
+
+- fill it up, and do the test:
+    ./vendor/bin/phpunit --filter test_a_user_has_a_token_after_registration
+    
+- YOU IDIOT!!!!! {{{{{{{{ REMEMBER TOKEN is not for account confirmation, it's for remembering the accout in loggin (remember me) Idiot!!!!}}}}}}}}
+  .. now, turn everything back, and follow the lesson as it is!
+
+- Success!!  'confirm_token' filled with a random token and test_a_user_has_a_token_after_registration succeed!
+
+- You can see the confirm-your-email.blade.php when return it in a route: 
+      Route::get('/', function () {
+          return new App\Mail\ConfirmYourEmail();
+      });
+
+*/
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------
+//        Customize Regiseration with Test Driven Development: test_a_user_can_confirm_email + Confirm Mail for real using mail trap
+//                      Laravel 8: don't use this, use 'email_verified_at' instead.s
+//------------------------------------------------------------------------------------------------------------------------------------
+/*
+- This Test make sure that the user can confirm his email using the link: 
+      php artisan make:test ConfirmEmailTest{}
+
+- make, and fill it:
+      test_a_user_can_confirm_email()
+
+- filling that up, you need to make a route and controller: 
+      Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::class, 'index']);
+      php artisan make:controller ConfirmEmailController
+
+- after filling them up, make a confirm() function in the User model
+
+- also the User Factory, add: 
+      'confirm_token' => Str::random(25),
+
+
+- Test Will fail if you don't use the fresh method:
+      $this->assertTrue($user->fresh()->isConfirmed());
+  instead of: 
+      $this->assertTrue($user->isConfirmed());
+  Cuz if you change the model record it will still have the old version, so you have to refresh that using fresh()
+
+
+- make a new method: 
+      test_user_is_redirected_if_token_is_wrong
+  and fill it up.
+
+- put a route and the token in: 
+    confirm-your-email.blade.php
+  but you have to receive the $user first to get $user->token 
+
+- So, Send the user from Mail/ConfirmYourEmail
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//             Series of LMS SaaS
 //---------------------------------------------------------------------------------------------------------
 /*
 
-- 
+- let's make series model with migrations:
+    php artisan make:model Series -m
+
+
 */
 
 
