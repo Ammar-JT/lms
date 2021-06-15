@@ -25,6 +25,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::class, 'index'])->name('confirm-email');
 
 
+Route::prefix('admin')->group(function(){
+  Route::resource('series', App\Http\Controllers\SeriesController::class);
+});
+
 
 //===============================================================
 //          What is this project?
@@ -355,12 +359,104 @@ this will install the ui for auth and also vue.js:
 
 
 //---------------------------------------------------------------------------------------------------------
-//             Series of LMS SaaS
+//               Series Create of LMS SaaS
 //---------------------------------------------------------------------------------------------------------
 /*
 
 - let's make series model with migrations:
     php artisan make:model Series -m
+
+- fill the migration and remove the mass assignment protection from the model
+
+- make factory for this:
+    php artisan make:factory SeriesFactory
+
+
+------------
+
+- let's make the ui for creating series from the theme block-contact + page-portfolio ..in:
+    views/admin/series/create.blade.php 
+
+-make route group for admin with the prefix admin: 
+    Route::prefix('admin')->group(function(){
+      Route::resource('series);
+    });
+
+- make the SeriesController and put it in the route group: 
+    php artisan make:controller SeriesController --resource
+  and return the view you made in create()
+
+- use the store() function, and make validation request: 
+    php artisan make:request CreateSeriesRequest
+
+- here is a function we will use to store the image from this library: //vendor\laravel\framework\src\Illuminate\Http\UploadedFile.php
+      which is >>> $request->file('image')->storePubliclyAs() <<< save to a directory + name of the file
+
+- done
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//              Series Create Test
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- do: 
+      php artisan make:test CreateSeriesTest
+- all the details in the test file CreateSeriesTest.php
+
+- notice that the image uploading been handled by the Controller like a real image, 
+  .. but we force the storage to be fake.. so it been uploaded to that fake storage
+- Also Notice!!! this fake storage will not work with php link (the one you use for uploading image cuz the Storage class not working in shared hosting)
+  .. it only works with Storage and the model functions like storePubliclyAs()..... i think ya3ni
+
+--------
+
+- make a title test: 
+
+
+- if you had this error: 
+    Integrity constraint violation: 19 NOT NULL constraint failed: series.title
+  it means the controller tried to make title with null value, which is not allowed
+
+- To prevent that, just make validation in the CreateSeriesRequest for title > requireds
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//              Refactor SeriesController@Create: move the logic to the Request Class!!
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- move all the logic of the controller into the request class
+
+- in the CreateSeriesRequest.php make these methods: 
+      uploadSeriesImage()
+      storeSeries()
+  and then use it in SeriesController{}
+
+- put the validations in CreateSeriesRequest, and test it in CreateSeriesTest
+
+
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//              Admin Middleware
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- move all the logic of the controller into the request class
+
+- in the CreateSeriesRequest.php make these methods: 
+      uploadSeriesImage()
+      storeSeries()
+  and then use it in SeriesController{}
+
+- put the validations in CreateSeriesRequest, and test it in CreateSeriesTest
+
 
 
 */
