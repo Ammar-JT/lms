@@ -13,6 +13,11 @@ class Series extends Model
     protected $guarded = [];
     
 
+    //doing this will make the series holding the lesson with it even if you didn't
+    //.. call the lessons, you can see that clearly when you dd($series)
+    //.. try with $with once, and comment $with and try dd($series) again:
+    protected $with = ['lessons'];
+
     /**
      * Get the route key for the model.
      *
@@ -20,5 +25,9 @@ class Series extends Model
      */
     public function getRouteKeyName(){
         return 'slug';
+    }
+
+    public function lessons(){
+        return $this->hasMany(Lesson::class);
     }
 }

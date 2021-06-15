@@ -27,6 +27,7 @@ Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::cl
 
 Route::middleware('admin')->prefix('admin')->group(function(){
   Route::resource('series', App\Http\Controllers\SeriesController::class);
+  Route::resource('{series}/lessons',App\Http\Controllers\LessonsController::class)
 });
 
 
@@ -519,14 +520,98 @@ this will install the ui for auth and also vue.js:
 //---------------------------------------------------------------------------------------------------------
 /*
 
-- copy this method from Model class that all you model extends it: 
-      getRouteKeyName()
-  and paste it in Series model so you can override
-  public function getRouteKeyName(){
-      return 'slug';            <<<<            instead of $this->getKeyName();
-  }
+- make model for it: 
+      php artisan make:model Lesson -m
+  fill the migration
+
+- remove the protection from mass assignment in the model
+
+- make an index.blade.php (not show) to display the single lesson
+
+- make a factory:
+    php artisan make:factory LessonFactory --model="Lesson"
+
+- now refresh youe database:
+      php artisan migrate:refresh
+  and use tinker to make 5 lessons: 
+      php artisan tinker
+  then: 
+      App\Models\Lesson::factory()->count(5)->create();
+  now get all series and copy one of the series's slug in ur url: 
+       App\Models\Series::all()
+
+- Now we want to put a one to many relationship between Series and lessons,
+  ..that can be done in the series model
+
+      public function lessons(){
+        return $this->hasMany(Lesson::class);
+      }
+  Also put this property up there in the same model: 
+        protected $with = ['lessons'];
+  ..so the model series always loaded with lessons
+
+-
 
 */
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Lessons's view using Vue
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- make a new component called Lessons.vue
+- register it in app.js:
+      Vue.component('vue-lessons', require('./components/Lessons.vue').default);
+  do: 
+      npm run watch
+
+- amount the vue component in series/index.blade.php: 
+      <vue-lessons></vue-lessons>
+  now assign the series to a vue variable (in Lesson.vue we will parse the objects to json objects): 
+      <vue-lessons default_lessons="{{$series->lessons}}"></vue-lessons>
+
+- in Lessons.vue assign the variable to the props: 
+      props: [
+        'default_lesson'
+      ],
+
+- too many things to explain, take a look at  Lessons.vue and trace the code
+- the modal that pop up when you want to create new lesson should be in:
+     children/CreatedLesson.vue
+  and then register it the components property of Lessons.vue
+
+- don't forget that the courese use and older version of vue.js, so when you import
+  .. component inside a component, you do like this:
+        import CreateLesson from './children/CreateLesson.vue'
+        export default {
+            props: [
+                'default_lessons'
+            ],
+            components:{
+                CreateLesson,W
+            },
+  .. unlike the way he used
+
+- We also gonna use axios to handle request in ajax
+
+
+---------
+
+
+*/
+
+//---------------------------------------------------------------------------------------------------------
+//                      Explicit Route Model Binding
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- Here in laravel, register the routes:
+
+
+*/
+
+
 
 
 
