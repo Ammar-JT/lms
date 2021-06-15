@@ -12,4 +12,13 @@ class Series extends Model
     //by this, you remove mass assignment protection, cuz it's not dangorous and has not cretical data: 
     protected $guarded = [];
     
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(){
+        return 'slug';
+    }
 }

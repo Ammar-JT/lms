@@ -16,6 +16,14 @@ class Administrator
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+        //createe a custom config file <<< which we did in config('lms.administrators')
+
+        if(auth()->check()){ // if user authenticated
+            if(auth()->user()->isAdmin()){ //.. then, check if he is an admin
+                return $next($request);
+            }
+        }
+        session()->flash('error', 'You are not autherised to perform this action');
+        return redirect('/');
     }
 }

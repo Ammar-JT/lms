@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,9 +19,15 @@ class CreateSeriesTest extends TestCase
     use RefreshDatabase;
 
 
+
+
     public function test_a_user_can_create_a_series(){
         //do the test without handling the exception, so we can see the errors in the cli: 
         $this->withoutExceptionHandling();
+
+        
+        $this->loginAdmin();
+        
 
         //this create a fake storage file
                     //(and this put the file in the disk you specify which is 'local' not 's3')
@@ -47,6 +55,7 @@ class CreateSeriesTest extends TestCase
 
     public function test_a_series_must_be_created_with_a_title(){
         //$this->withoutExceptionHandling();
+        $this->loginAdmin();
 
 
         $this->post('/admin/series', [
@@ -57,6 +66,7 @@ class CreateSeriesTest extends TestCase
 
     public function test_a_series_must_be_created_with_a_description(){
         //$this->withoutExceptionHandling();
+        $this->loginAdmin();
 
 
         $this->post('/admin/series', [
@@ -67,6 +77,7 @@ class CreateSeriesTest extends TestCase
 
     public function test_a_series_must_be_created_with_an_image(){
         //$this->withoutExceptionHandling();
+        $this->loginAdmin();
 
 
         $this->post('/admin/series', [
@@ -77,6 +88,7 @@ class CreateSeriesTest extends TestCase
 
     public function test_a_series_must_be_created_with_an_image_not_string(){
         //$this->withoutExceptionHandling();
+        $this->loginAdmin();
 
 
         $this->post('/admin/series', [
@@ -84,5 +96,39 @@ class CreateSeriesTest extends TestCase
             'description' => 'the best vue casts ever',
             'image' => 'string image'
         ])->assertSessionHasErrors('image');
+    }
+
+    public function test_only_admins_can_create_series(){
+        //user
+        $user = User::factory()->create();
+
+        //this makes the test login with this new created user: 
+        $this->actingAs($user);
+
+
+        // no need for this crowded
+        /*
+        $this->post('/admin/series', [
+            'title' => 'vue.js for the best',
+            'description' => 'the best vue casts ever',
+            'image' => UploadedFile::fake()->image('image-series.png')
+        ])->assertSessionHas('error', 'You are not autherised to perform this action');
+        */
+        //.. better do it this way
+        $this->post('/admin/series')
+            ->assertSessionHas('error', 'You are not autherised to perform this action');
+        
+    }
+
+
+
+    //---------------------------------------------------------------------------------------------------------
+    //              Testing Admin Middleware
+    //              pushing user email to the config('lms.administrators') to make them admins
+    //---------------------------------------------------------------------------------------------------------
+    private function loginAdmin(){
+        $user = User::factory()->create();
+        Config::push('lms.administrators', $user->email);
+        $this->actingAs($user);
     }
 }

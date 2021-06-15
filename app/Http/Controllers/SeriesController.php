@@ -37,13 +37,12 @@ class SeriesController extends Controller
      */
     public function store(CreateSeriesRequest $request)
     {
-        // validation + upload + create file already made using CreateSeriesRequest: 
-        $request->uploadSeriesImage()
+        // validation + upload + create file already made using CreateSeriesRequest:
+        //.. notice you used return,, cuz you can't do the redirect from there
+        //.. you have to return the redirect,, and here you return it also
+        return $request->uploadSeriesImage()
                 ->storeSeries();
-        session()->flash('success', 'Series created successfully.');
-
-        //redirect user to a page to see all series
-        return redirect()->back();
+        
     }
 
     /**
@@ -52,9 +51,9 @@ class SeriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Series $series)
     {
-        //
+        dd($series);
     }
 
     /**

@@ -25,7 +25,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::class, 'index'])->name('confirm-email');
 
 
-Route::prefix('admin')->group(function(){
+Route::middleware('admin')->prefix('admin')->group(function(){
   Route::resource('series', App\Http\Controllers\SeriesController::class);
 });
 
@@ -448,17 +448,87 @@ this will install the ui for auth and also vue.js:
 //---------------------------------------------------------------------------------------------------------
 /*
 
-- move all the logic of the controller into the request class
+- create the middleware: 
+    php artisan make:middleware Administrator
+- register the middleware in the kernel.php: routeMiddleWare: 
+    'admin' => \App\Http\Middleware\Administrator::class
 
-- in the CreateSeriesRequest.php make these methods: 
-      uploadSeriesImage()
-      storeSeries()
-  and then use it in SeriesController{}
+- create a custom config file to store the admins names: 
+    /config/lms
 
-- put the validations in CreateSeriesRequest, and test it in CreateSeriesTest
+- make the middleware logic
+- make a function isAdmin() in the User model
 
+- now attach the middleware to the admin group of routes
+
+- sign up with admin@admin.com and try to visit: 
+    /admin/series/create
+  Success, try to visit it with another user: 
+  Failed and redirected to home!
+
+----------
+
+*/
+
+//---------------------------------------------------------------------------------------------------------
+//              Testing Admin Middleware
+//              pushing user email to the config('lms.administrators') to make them admins
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- let's test this middleware, in CreateSeriesTest: 
+      test_only_admins_can_create_series()
+
+- Succeed
+
+- BUT!!! IT WILL FAILS ALL THE OTHER /admin/... tests!!!
+  ..because user can do anything in that /admin/... unless he is an admin,
+
+-So, to get over that we have to make new user for everytest and push this
+  .. user to the config('lms.administrators')
+  .. how can we push to a config??? like this: 
+         Config::push('lms.administrators', $user->email);
+  You do that for any user you want to make him an admin during the runtime
+  .. then you need to logged the user in ofcourse
+
+-After doing that, put it in a function: 
+      loginAdmin()
+ and use it for every test that needed it
 
 
 */
+
+//---------------------------------------------------------------------------------------------------------
+//              Routing: use slug instead of primary key for the single series
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- copy this method from Model class that all you model extends it: 
+      getRouteKeyName()
+  and paste it in Series model so you can override
+  public function getRouteKeyName(){
+      return 'slug';            <<<<            instead of $this->getKeyName();
+  }
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Lessons
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- copy this method from Model class that all you model extends it: 
+      getRouteKeyName()
+  and paste it in Series model so you can override
+  public function getRouteKeyName(){
+      return 'slug';            <<<<            instead of $this->getKeyName();
+  }
+
+*/
+
+
+
 
 

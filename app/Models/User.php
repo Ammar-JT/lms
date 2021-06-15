@@ -53,4 +53,16 @@ class User extends Authenticatable
         $this->confirm_token = null;
         $this->save();
     }
+
+
+    public function isAdmin(){
+        /*
+        if($this->email === config('lms.administrators')){
+            return true;
+        }
+        return false;
+        */
+
+        return in_array($this->email, config('lms.administrators'));
+    }
 }
