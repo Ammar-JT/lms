@@ -8,6 +8,45 @@ require('./bootstrap');
 
 window.Vue = require('vue').default;
 
+
+/*
+//I'm just playing with windows object to figure out how to make a notification using
+//.. event bus: 
+window.noty = function(notification){
+    console.log(notification.message) // go to chrome in the console and call noty({ messgae: 'asdf'})
+                                      // .. why { message:'asdf'}? cuz logically, it expect an object that one of its properties is message                         
+}
+*/
+
+//------------------------
+//       Event Bus
+//------------------------
+window.events = new Vue();
+
+window.noty = function(notification){
+    window.events.$emit('notification' , notification)
+}
+
+//------------------------
+//      global method
+//------------------------
+//this method can be used in any component in vue.js: 
+window.handleError = function(error){
+    if(error.response.status == 422){
+        window.noty({
+            message: 'You had validation errors, please try again',
+            type: 'danger'
+        })
+    }
+    window.noty({
+        message: 'Something went wrong, please refresh the page',
+        type: 'danger'
+    })
+}
+
+
+
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -19,6 +58,7 @@ window.Vue = require('vue').default;
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+Vue.component('vue-noty', require('./components/Noty.vue').default);
 Vue.component('vue-login', require('./components/Login.vue').default);
 Vue.component('vue-lessons', require('./components/Lessons.vue').default);
 

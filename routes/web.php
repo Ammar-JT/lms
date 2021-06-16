@@ -700,9 +700,217 @@ this will install the ui for auth and also vue.js:
 /*
 
 - do: 
-    php artisan make:test CreateLessonsTest
+      php artisan make:test CreateLessonsTest
+
+- make this function with its tests: 
+      test_a_user_can_create_lessons()
+
+- make this test: 
+      ./vendor/bin/phpunit --filter test_a_user_can_create_lessons
+
+- don't forget:     use RefreshDatabase;
+
+- change 200 to 201, cuz it means it created successfuly, not just the page request succeed!
+
+- go and see the test.
+
+
+- Do another test: 
+            test_a_title_is_required_to_create_a_lesson()
+  and fill it, this is some of the stuff: 
+            $this->postJson("/admin/$series->id/lessons", $lesson)
+                  ->assertSessionHasErrors('title');
+
+- put a valiation for creat lesson in custom request
+            php artisan make:request CreateLessonRequest
+  dont forget to set the authorize() to return true in the CreateLessonRequest
+
+- do the test: 
+            ./vendor/bin/phpunit --filter test_a_title_is_required_to_create_a_lesson
+  Error, why? cuz you use: 
+            postJson()
+  ..and this make json api enviroment, and test json only, so this assertion is not suitable: 
+            ->assertSessionHasErrors('title');
+  Cuz it is postJson() not post(), so what the solution? use this assertion: 
+            ->assertStatus(422)
+  Succeed!!
+
+- now do the same function but for description: 
+            test_a_description_is_required_to_create_a_lesson()
+
 
 */
+
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      lesson created successfully: 
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- go to CreateLesson.vue, the repsonse for creating will give you a message,
+  .. you have to $emit to pass it up to the parent:
+            ).then(reps =>{
+              this.$parent.$emit('lesson_created', resp.data) << notice it's this.$parent.$emit not this.$emit.... if you do it without parent then you have to refresh the page to see the lessons updated
+            }).catch
+
+- now to listen to this event, you have to mount it in the parent (Lesson.vue): 
+            mounted(){
+              this.$on('lesson_created', (lesson) =>{
+                this.lessons.push(lesson)
+              }
+            }
+- look at CreateLesson.vue and Lessons.vue, cuz they are the only files changed here
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Deleting Lessons: 
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- fill the destroy function in LessonsController{} 
+
+- make function for delete in Lesson.vue attach with delete button:
+        <button class="btn btn-danger btn-xs" @click="deleteLesson(lesson.id, key)">
+            Delete
+        </button> 
+  obviously you have to create the function in method:{} :
+    deleteLesson(){
+      if(confirm('Are you sure you wanna delete?')){
+        ax
+      }
+    }
+
+- to Make the dom update the array of lesson, you have to pass the index key of that array
+  .. when been catched from the loop of lessons.
+
+
+- now put this in the axios .then() 
+        this.lessons.splice(key,1)
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Update Lessons: 
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- fill the update() in LessonsController{} 
+
+- make update request: 
+      php artisan make:request UpdateLessonRequest
+
+
+------
+Edit: 
+
+- Now in Lessons.vue make a click event for editLesson(lesson): 
+        <button class="btn btn-primary btn-xs" @click="editLesson(lesson)">
+- make the function editLesson(lesson), and $emit the lesson you wanna update to 
+  ..the child CreateLesson.vue to display the edit: 
+        editLesson(lesson){
+          this.$emit('edit_lesson', lesson)
+        }
+
+- now in the child CreateLesson.vue, in mount(): 
+        this.$parent.$on('edit_lesson', (lesson) => {
+            this.editingMode = true
+        })
+  notice you active the editingMode variable
+
+- fill the same function with what you want to be displayed in the modal form: 
+        this.$parent.$on('edit_lesson', (lesson) => {
+              this.editingMode = true
+
+              this.title = lesson.title
+              this.description = lesson.description
+              this.video_id = lesson.video_id
+              this.episode_number = lesson.episode_number
+          })
+
+- now, use the editingMode in with buttons to change the text with v-if + v-else: 
+        <button type="button" class="btn btn-primary" @click="updateLesson" v-if="editing">Save lesson</button>
+        <button type="button" class="btn btn-primary" @click="createLesson" v-else>Edit lesson</button>
+
+
+
+-------
+Update: 
+
+
+- pass the series_id as payload just like you did with create lesson
+
+- in CreateLesson.vue create the updateLesson() method using axios, go and see it.
+- refactore CreateLesson and make a class for lesson that have constructor to put the property on it: 
+              //--------------------
+              // create Lesson Class
+              //--------------------
+  replaced everything you need to replace + replace the v-model="title" to v-model="lesson.title" and so on
+
+- make the put request using axios.put() and send the edited data, go and see it 
+
+- in axios.put().then(....), close the modal+ update the DOM
+
+- now in Lessons.vue listen to the event, in mounted()
+    {find the index of the updated + replace the old lesson with the updated lesson}
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Custom Notification
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- Best way to display a notification in anywhere is to register it in js event bus in our window object
+  .. to understand that, just visit this video, im too tired to explain: 
+      https://www.udemy.com/course/the-ultimate-advanced-laravel-pro-course-incl-vuejs-2/learn/lecture/8449626?start=30#content
+  For me, I understand the event bus from this perfect video: 
+      https://www.youtube.com/watch?v=jzh4zQcfB0o
+
+- make window.events = new Vue(); in app.js << a vue instance stored in a window variable object called events
+
+- also make it window.events.$emit that emit! 
+
+- make Noty.vue component that have window.events.$on() that listen  + register it in app.js (vue.js)
+
+- now mount the noty component in the app.blade.php bottom
+
+- etc etc etc .......
+
+
+- now if you want to notify, just use: 
+      window.noty({
+          message: 'Put you message here',
+          type: "success" <<<<<< if error put danger, if success put success
+      })
+  you can do that after any event, like when you create a new lesson or delete
+
+
+- So, to have a global variable or global object in vue.js, you can use an event bus
+  .. so the component can commuincate with the the global listener,
+
+- Or Also you can use a global method in the app.js also using window.
+  .. we will customize a function in the app.js and call it:
+          window.handleError() 
+  .. Go and see it!
+
+
+
+*/
+
+
+
+
+
+
+
 
 
 

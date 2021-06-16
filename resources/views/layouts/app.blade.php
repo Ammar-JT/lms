@@ -78,6 +78,7 @@
     <!-- END Main container -->
 
     <!-- or if(!auth()->check()) -->
+    <vue-noty></vue-noty>
     @guest
       <vue-login></vue-login>
     @endguest
