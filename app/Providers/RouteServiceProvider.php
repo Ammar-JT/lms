@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Series;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -47,6 +48,22 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         });
+
+
+        //-----------------------------------------------
+        //             Excplicit Route Binding
+        //-----------------------------------------------
+        // here you tell laravel excplicity: 
+                    //bind this    to   this
+        Route::model('series_by_id', Series::class);
+
+        //now tell laravel excplicitly how to resolve it:
+        Route::bind('series_by_id', function($value){
+            //so instead of taking the parameter using slug (which you change it to slug, using the overrided method @getRouteKeyName() in the class Model )
+            //so here we tell laravel that when you take the id ($value) and not the slug.... return the model:
+            return Series::findOrFail($value);
+        });
+
     }
 
     /**

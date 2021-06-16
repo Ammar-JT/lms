@@ -20,7 +20,8 @@
 import CreateLesson from './children/CreateLesson.vue'
 export default {
     props: [
-        'default_lessons'
+        'default_lessons',
+        'series_id'
     ],
     components:{
         CreateLesson,
@@ -40,7 +41,7 @@ export default {
         createNewLesson(){
             //you will emit this event to a child this time,
             //.. the child is CreateLesson.vue, and will be received there in mounted(){}
-            this.$emit('create_new_lesson') 
+            this.$emit('create_new_lesson', this.series_id) 
         }
     }
     

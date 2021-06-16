@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Series;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,10 +25,13 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::class, 'index'])->name('confirm-email');
 
+Route::get('{series_by_id}', function (Series $series) {
+  dd($series);
+});
 
 Route::middleware('admin')->prefix('admin')->group(function(){
   Route::resource('series', App\Http\Controllers\SeriesController::class);
-  Route::resource('{series}/lessons',App\Http\Controllers\LessonsController::class)
+  Route::resource('{series_by_id}/lessons',App\Http\Controllers\LessonsController::class);
 });
 
 
@@ -606,8 +610,97 @@ this will install the ui for auth and also vue.js:
 //---------------------------------------------------------------------------------------------------------
 /*
 
-- Here in laravel, register the routes:
+- Here in laravel, register the route of the lessons here in web.php:
 
+- Implicit route binding (ضمنية، مفهومة خلاص تنفهم وهي طايرة)  is when you bind the model name with the model it self: 
+            Route::resource('{series}/lessons',App\Http\Controllers\LessonsController::class);
+  Now, you can in LessonsController@show do 
+            show(Lesson $lesson){}
+  and deal with $lesson as a model, this is called implicit binding
+
+
+- Explicit route binding (صريحة، لازم تشرحها للارافيل بكامل الصراحة)  is a customise route binding,
+  .. you have to explain to laravel how it should understand the passed parameter
+  .. you do that in RouteService Provider: 
+            Route::model('series_by_id', Series::class);
+            Route::bind('series_by_id', function($value){
+                return Series::findOrFail($value);
+            });
+  Domain will be like: 
+            http://lms/admin/4/lessons/4
+  .. notice we didn't pass (/series/4/lessons/4)
+  Go to RouteServiceProvider for more details
+
+------
+- make lessons crud controller: 
+            php artisan make:controller LessonsController --resource
+  and fill the store(): 
+            return $series->lessons()->create($request->all());
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      create lesson logic in Vue views
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- put an event listiner property in CreateLesson.vue, in the button tag: 
+        <button type="button" class="btn btn-primary" @click="createLesson">Save lesson</button>
+- put the method createLesson() in method: in the script of CreateLesson.vue
+
+- now you have to have the series id in the Vue filse, to do that you have to pass it form /series/index: 
+            <vue-lessons default_lessons="{{$series->lessons}}" series_id={{$series->id}}></vue-lessons>
+
+- and in Lessons.vue, receive the series id as props: 
+            props: [
+                'default_lessons',
+                'series_id'
+            ],
+  and in the methods:{} pass it to the child
+            methods:{
+                createNewLesson(){
+                    this.$emit('create_new_lesson', this.series_id) <<<< pass it in the para
+                }
+              }
+  
+  
+
+- and in CreateLesson.vue: 
+          mounted(){
+              this.$parent.$on('create_new_lesson', (seriesId)=>{ <<<<<<< here, pass the series id
+                  this.seriesId = seriesId;
+                  console.log('hello parent, we are creating the lesson')
+                  //here we use jquery + bootstrap: 
+                  $('#createLesson').modal()
+              })
+            }
+
+  and in the same file: 
+          data(){
+            return{
+              seriesId: ''
+            }
+          }
+
+- in CreateLesson.vue  do the axios post requests, go check it,
+  .. This shit doesn't work, i donno why, it wasted my time: 
+          Axios.post('/admin/${this.seriesId}/lessons', {
+  so i replaced it with this: 
+          Axios.post("/admin/" + this.seriesId +"/lessons", {
+  and it works!!!
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      create lesson logic in Vue views: A Test for it!
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- do: 
+    php artisan make:test CreateLessonsTest
 
 */
 

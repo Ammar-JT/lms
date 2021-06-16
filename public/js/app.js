@@ -1866,7 +1866,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['default_lessons'],
+  props: ['default_lessons', 'series_id'],
   components: {
     CreateLesson: _children_CreateLesson_vue__WEBPACK_IMPORTED_MODULE_0__.default
   },
@@ -1884,7 +1884,7 @@ __webpack_require__.r(__webpack_exports__);
     createNewLesson: function createNewLesson() {
       //you will emit this event to a child this time,
       //.. the child is CreateLesson.vue, and will be received there in mounted(){}
-      this.$emit('create_new_lesson');
+      this.$emit('create_new_lesson', this.series_id);
     }
   }
 });
@@ -2067,8 +2067,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   mounted: function mounted() {
+    var _this = this;
+
     //receive from the $emit of the parent Lessons.vue
-    this.$parent.$on('create_new_lesson', function () {
+    this.$parent.$on('create_new_lesson', function (seriesId) {
+      _this.seriesId = seriesId;
       console.log('hello parent, we are creating the lesson'); //here we use jquery + bootstrap: 
 
       $('#createLesson').modal();
@@ -2079,8 +2082,23 @@ __webpack_require__.r(__webpack_exports__);
       title: '',
       description: '',
       episode_number: '',
-      video_id: ''
+      video_id: '',
+      seriesId: ''
     };
+  },
+  methods: {
+    createLesson: function createLesson() {
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post("/admin/" + this.seriesId + "/lessons", {
+        title: this.title,
+        description: this.description,
+        episode_number: this.episode_number,
+        video_id: this.video_id
+      }).then(function (resp) {
+        console.log(resp);
+      })["catch"](function (resp) {
+        console.log(resp);
+      });
+    }
   }
 });
 
@@ -38172,7 +38190,26 @@ var render = function() {
             ])
           ]),
           _vm._v(" "),
-          _vm._m(1)
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button", "data-dismiss": "modal" }
+              },
+              [_vm._v("Close")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: { click: _vm.createLesson }
+              },
+              [_vm._v("Save lesson")]
+            )
+          ])
         ])
       ])
     ]
@@ -38201,27 +38238,6 @@ var staticRenderFns = [
           }
         },
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-footer" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-secondary",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("Close")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-primary", attrs: { type: "button" } },
-        [_vm._v("Save lesson")]
       )
     ])
   }

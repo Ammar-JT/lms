@@ -27,7 +27,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save lesson</button>
+                        <button type="button" class="btn btn-primary" @click="createLesson">Save lesson</button>
                     </div>
                 </div>
             </div>
@@ -41,7 +41,8 @@ import Axios from 'axios'
 export default {
     mounted(){
         //receive from the $emit of the parent Lessons.vue
-        this.$parent.$on('create_new_lesson', ()=>{
+        this.$parent.$on('create_new_lesson', (seriesId)=>{
+            this.seriesId = seriesId;
             console.log('hello parent, we are creating the lesson')
             //here we use jquery + bootstrap: 
             $('#createLesson').modal()
@@ -52,7 +53,22 @@ export default {
             title: '',
             description: '',
             episode_number: '',
-            video_id: ''
+            video_id: '',
+            seriesId: ''
+        }
+    },
+    methods:{
+        createLesson(){
+            Axios.post("/admin/" + this.seriesId +"/lessons", {
+                title: this.title,
+                description: this.description,
+                episode_number: this.episode_number,
+                video_id: this.video_id
+            }).then(resp => {
+                console.log(resp)
+            }).catch(resp => {
+                console.log(resp)
+            })
         }
     }
 }
