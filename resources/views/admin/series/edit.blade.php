@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-12 col-lg-8 offset-lg-2">
 
-        <h1>Create a series</h1>
+        <h1>Edit: {{$series->title}}</h1>
         <p class="fs-20 opacity-70">You can find several product design by our professional team in this section.</p>
 
         </div>
@@ -30,11 +30,12 @@
       <div class="row gap-y">
         <div class="col-12">
 
-          <form action="{{route('series.store')}}" method="POST" enctype="multipart/form-data">
+          <form action="{{route('series.update', $series->slug)}}" method="POST" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
 
             <div class="form-group">
-              <input class="form-control form-control-lg" type="text" name="title" placeholder="Your Series Title">
+              <input class="form-control form-control-lg" value="{{$series->title}}" type="text" name="title" placeholder="Your Series Title">
             </div>
 
             <div class="form-group">
@@ -42,7 +43,7 @@
             </div>
 
             <div class="form-group">
-              <textarea class="form-control form-control-lg" name="description" rows="4" placeholder="Your Description"></textarea>
+              <textarea class="form-control form-control-lg" name="description" rows="4" placeholder="Your Description">{{$series->description}}</textarea>
             </div>
 
 
