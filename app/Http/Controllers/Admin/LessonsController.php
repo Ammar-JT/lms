@@ -1,12 +1,15 @@
 <?php
-
-namespace App\Http\Controllers;
+//you have to update the namespace cuz you move this controller one to \Admin: 
+namespace App\Http\Controllers\Admin;
 
 use App\Models\Lesson;
 use App\Models\Series;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
+
+//you have to import the controller cuz it's not in the same directory cuz you move this one to \Admin: 
+use App\Http\Controllers\Controller;
 
 class LessonsController extends Controller
 {

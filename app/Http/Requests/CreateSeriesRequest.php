@@ -4,9 +4,8 @@ namespace App\Http\Requests;
 
 use App\Models\Series;
 use Illuminate\Support\Str;
-use Illuminate\Foundation\Http\FormRequest;
 
-class CreateSeriesRequest extends FormRequest
+class CreateSeriesRequest extends SeriesRequest
 {
     protected $fileName;
     /**
@@ -34,14 +33,6 @@ class CreateSeriesRequest extends FormRequest
         ];
     }
     
-    public function uploadSeriesImage(){
-        $this->fileName = Str::slug($this->title) .'.'. $this->file('image')->getClientOriginalExtension();
-        $image = $this->file('image')->storePubliclyAs('series', $this->fileName);
-
-        return $this;
-    }
-
-
     public function storeSeries(){
         $series = Series::create([
             'title' => $this->title,

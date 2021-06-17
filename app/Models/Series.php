@@ -30,4 +30,10 @@ class Series extends Model
     public function lessons(){
         return $this->hasMany(Lesson::class);
     }
+
+
+    //accessor, like the one in java, set and get methods: 
+    public function getImagePathAttribute(){
+        return asset('storage/' . $this->image_url);
+    }
 }

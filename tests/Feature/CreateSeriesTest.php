@@ -42,7 +42,7 @@ class CreateSeriesTest extends TestCase
 
         //this check if the filed is uploaded to our fake storage
         Storage::disk(config('filesystems.default'))->assertExists(
-            'series/' . Str::slug('vue.js for the best') . '.png'
+            'public/series/' . Str::slug('vue.js for the best') . '.png'
         );
 
         //this assert that our sqlite db has the column for the slug

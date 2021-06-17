@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Series;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,12 +15,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function(){
+  //key: value // string, set that: 
+    //Redis::set('friend', 'momo');
+    //now see the value: 
+    //dd(Redis::get('friend'));
+
+  //key: value // list
+    //Redis::lpush('frameworks', ['vuejs','laravel','nodejs']);
+    //see the value of that list (lrange = list range, put a range or put 0, -1 so you can get all)
+    //dd(Redis::lrange('frameworks', 0, -1)); // the list doesn't care if element is duplicated, unlike the set
+
+  //key: value // set, the set does care if element is duplicated, unlike the list
+  //..so all the values are unique on it: 
+    //Redis::sadd('fronted-frameworks', ['angular, vuejs, react']);
+    //dd(Redis::smembers('fronted-frameworks'));
 });
 
+//Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
+
 Auth::routes();
-Route::get('/logout', function(){auth()->logout();});
+Route::get('/logout', function(){
+  auth()->logout();
+});
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -29,10 +47,6 @@ Route::get('{series_by_id}', function (Series $series) {
   dd($series);
 });
 
-Route::middleware('admin')->prefix('admin')->group(function(){
-  Route::resource('series', App\Http\Controllers\SeriesController::class);
-  Route::resource('{series_by_id}/lessons',App\Http\Controllers\LessonsController::class);
-});
 
 
 //===============================================================
@@ -906,6 +920,55 @@ Update:
 */
 
 
+
+//---------------------------------------------------------------------------------------------------------
+//                        Update Series Test
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- do:
+      php artisan make:test UpdateSeriesTest
+
+- make: 
+      test_a_user_can_update_a_series()
+
+- these test class and function are very similar to the CreateSeriesTest
+
+- success!!
+
+
+- make this also: 
+      test_an_image_is_not_required_to_update_a_series()
+      
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                        Parent Series Request
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- there are many duplicated functinos in update and create series request,
+  .. we want to make a parent series request to inherinit the function to the childs: 
+        php artisan make:request SeriesRequest
+
+- now move uploadSeriesImage() from UpdateSeriesRequest{} to SeriesRequest{} 
+- >>> UpdateSeriesRequest extends SeriesRequest <<< instead of >> UpdateSeriesRequest extends FormRequest
+ 
+
+- Do the previous two steps to CreateSeriesRequest{} also.. 
+
+- now do this to make sure that all works fine: 
+        ./vendor/bin/phpunit
+
+- Now move all the logic from SeriesController@update() to UpdateSeriesRequest@updateSeries()
+
+
+*/
+
+
+
 //---------------------------------------------------------------------------------------------------------
 //                      Clean the webiste:
 //---------------------------------------------------------------------------------------------------------
@@ -915,19 +978,115 @@ Update:
       1- set up the nav bar links
       2- CRUD functions for the series
       3- UdpateSeriesRequest 
-      
+
+- A semi new thing, route group file (like web.php and api.php): 
+      - create a route group file
+      - import it in Kernel.php in the $middlewareGroups array
+      - fill the array with a 'web' so it has all the middleware of 'web' group
+      - and put its own middleware which is 'admin' middleware
+      - in the boot() of RouteServiceProvider.php put: 
+            Route::prefix('admin')
+                ->middleware('admin')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/admin.php'));
+      - Now move the admin controllers in 'Controllers\Admin'
+      - update Controller importing
+      - update the name space
+*/
+
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      FrontendController + Diplaying images
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- make this: 
+      php artisan make:controller FrontendController
+- the '/' route, make it route to this controller 
+
+- copy the front end code from the github and paste it to the feature section of welcome.blade
+
+- do this to link the private storage folder with the public: 
+      php artisan storage:link
+
+- refactor the tests for image uploading and testing in: 
+      CreateSeriesTest
+      UpdateSeriesTest
+      SeriesRequest
+  to have: 
+      /public/series/...
+  instead of 
+      /series/...
+
+------------
+
 
 */
 
 
 
 //---------------------------------------------------------------------------------------------------------
-//                        Update Series Test
+//                      Unit Test for Series + accessor (like the accessor in java, setter and getter)
 //---------------------------------------------------------------------------------------------------------
 /*
 
-- 
-      
+- make this: 
+      php artisan make:test SeriesTest --unit
+
+- go and see it
+
+- we made an accessor: a getter in the model Series.php
+
+- use the newlly created accessor in welcome.php
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Redis: using Predis
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- Redis is a fast tool makes you store data in memory instead of the harddriver, just like sqlite
+
+- install predis using composer: 
+      composer require predis/predis
+
+- in .env, put: 
+      REDIS_CLIENT=predis
+
+- in config/database, put or change to: 
+      'client' => env('REDIS_CLIENT', 'predis'),
+
+- installation video: 
+      https://www.youtube.com/watch?v=188Fy-oCw4w&ab_channel=ProgrammingKnowledge2
+
+- install redis like the video using this file for windows (not offical): 
+      https://github.com/microsoftarchive/redis/releases
+
+- open redis server
+
+---
+
+- try redis in a route: 
+      Route::get('/redis', function(){
+
+      });
+- do the tutorial with kati frantz: 
+        https://www.udemy.com/course/the-ultimate-advanced-laravel-pro-course-incl-vuejs-2/learn/lecture/8449646?start=90#content
+
+
+
+
+
+-----
+- this is the documents of Predis, which is a library that use redis api: 
+      https://github.com/predis/predis
+- to learn redis commands: 
+      https://try.redis.io/
+
 
 */
 

@@ -1,12 +1,15 @@
 <?php
-
-namespace App\Http\Controllers;
+//you have to update the namespace cuz you move this controller one to \Admin: 
+namespace App\Http\Controllers\Admin;
 
 use App\Models\Series;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateSeriesRequest;
 use App\Http\Requests\UpdateSeriesRequest;
+
+//you have to import the controller cuz it's not in the same directory cuz you move this one to \Admin: 
+use App\Http\Controllers\Controller;
 
 class SeriesController extends Controller
 {
@@ -78,14 +81,9 @@ class SeriesController extends Controller
      */
     public function update(UpdateSeriesRequest $request, Series $series)
     {
-        if($request->hasFile('image')){
-            $series->image_url = $request->uploadSeriesImage()->fileName;
-        }
-        $series->title = $request->title;
-        $series->description = $request->description;
-        $series->slug = Str::slug($request->title);
+        $request->updateSeries($series);
 
-        $series->save();
+        
 
         return redirect()->route('series.index');
     }
