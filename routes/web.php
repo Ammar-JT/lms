@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
+//just learning redis
 Route::get('/', function(){
   //key: value // string, set that: 
     //Redis::set('friend', 'momo');
@@ -31,8 +33,15 @@ Route::get('/', function(){
     //Redis::sadd('fronted-frameworks', ['angular, vuejs, react']);
     //dd(Redis::smembers('fronted-frameworks'));
 });
+*/
 
-//Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
+Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
+Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 'series'])->name('series');
+
+Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index'])->name('series.learning');
+Route::get('/series/{series}/lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'showLesson'])->name('series.watch');
+
+
 
 Auth::routes();
 Route::get('/logout', function(){
@@ -1079,8 +1088,7 @@ Update:
 
 
 
-
-
+        
 -----
 - this is the documents of Predis, which is a library that use redis api: 
       https://github.com/predis/predis
@@ -1089,6 +1097,129 @@ Update:
 
 
 */
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Making a Trait in Laravel!
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- let's make a trait, make: 
+      app/Entities/Learning.php 
+
+- make the trait, and put all the extra functions you made in last lesson on it
+  .. go and see the trait Learning.php
+
+- after that, use it in the User model: 
+      use HasFactory, Notifiable, Learning;
+
+- and that's it!!
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      User unit test
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- do: 
+      php artisan make:test UserTest --unit
+
+- fill it up with tests that using redis, and do the test: 
+      ./vendor/bin/phpunit --filter test_a_user_can_complete_a_lesson
+
+
+- Now, create a function in Test/TestCase{} called: 
+      flushRedis()
+  .. to refresh redis database
+
+
+- make another test and fill it up, then test it 
+      ./vendor/bin/phpunit --filter test_can_get_percentage_completed_for_series_for_a_user
+
+- make a function in User model: 
+      test_can_get_percentage_completed_for_series_for_a_user()
+  make another one: 
+      getNumberOfCompletedLessonsForASeries()
+  and this second function, make an assertion for it in
+      UserTest@test_a_user_can_complete_a_lesson()
+
+- make also another function: 
+      test_can_know_if_a_user_has_started_a_series()
+      
+
+- make this in Learinig.php trait: 
+      1- hasStartedSeries()
+  and make this function in the Learning trait: 
+      2- getCompletedLessons()
+  and also this one cuz it relay on it: 
+      3- getCompletedLessonsForASeries()
+  and refactor the old function: 
+      0- getNumberOfCompletedLessonsForASeries()
+  so it uses the new method number 3
+
+
+-Make this function, it's the most complicated, so go and see it: 
+      test_can_get_completed_lessons_for_a_series()
+
+-See the related functions in Learning.php trait: 
+      getCompletedLessonsForASeries()
+      getCompletedLessons()
+
+*/
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Single Series View
+//---------------------------------------------------------------------------------------------------------
+/*
+
+-  make a new route: 
+      Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 'series'])->name('series');
+
+- make the series.blade.php 
+
+- clean it up.. 
+
+- you know this @auth @else @endauth ?? you can customize one that does your own function!
+  .. go to: 
+      AppServiceProvider.php@boot()
+  use the blade facade: 
+      Blade::if();
+  Go and see it!!!
+
+
+- now use it in series.blade.php: 
+      @hasStartedSeries
+  
+
+*/
+
+//---------------------------------------------------------------------------------------------------------
+//                      Watch Series
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- make a new route: 
+      Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index']);
+
+- make a controller for that: 
+      php artisan make:controller WatchSeriesController
+  and create the @index() inside it
+
+- now create the route: 
+
+
+*/
+
+
 
 
 

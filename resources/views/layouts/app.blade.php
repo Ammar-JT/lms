@@ -35,7 +35,7 @@
         <div class="topbar-left">
           <button class="topbar-toggler">&#9776;</button>
 
-          <a href="index.html" class="topbar-brand">
+          <a href="/" class="topbar-brand">
             <img src="{{asset('assets/img/logo.png')}}" alt="logo" class="logo-default">
             <img src="{{asset('assets/img/logo-light.png')}}" alt="logo" class="logo-inverse">
           </a>

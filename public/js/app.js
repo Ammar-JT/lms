@@ -38656,7 +38656,7 @@ var render = function() {
                     attrs: { type: "button" },
                     on: { click: _vm.updateLesson }
                   },
-                  [_vm._v("Save lesson")]
+                  [_vm._v("Edit lesson")]
                 )
               : _c(
                   "button",
@@ -38665,7 +38665,7 @@ var render = function() {
                     attrs: { type: "button" },
                     on: { click: _vm.createLesson }
                   },
-                  [_vm._v("Edit lesson")]
+                  [_vm._v("Create lesson")]
                 )
           ])
         ])

@@ -28,8 +28,8 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
-                        <button type="button" class="btn btn-primary" @click="updateLesson" v-if="editingMode">Save lesson</button>
-                        <button type="button" class="btn btn-primary" @click="createLesson" v-else>Edit lesson</button>
+                        <button type="button" class="btn btn-primary" @click="updateLesson" v-if="editingMode">Edit lesson</button>
+                        <button type="button" class="btn btn-primary" @click="createLesson" v-else>Create lesson</button>
 
                     </div>
                 </div>
