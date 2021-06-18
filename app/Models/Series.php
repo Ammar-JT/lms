@@ -36,4 +36,8 @@ class Series extends Model
     public function getImagePathAttribute(){
         return asset('storage/' . $this->image_url);
     }
+
+    public function getOrderedLessons(){
+        return $this->lessons()->orderBy('episode_number', 'asc')->get();
+    }
 }

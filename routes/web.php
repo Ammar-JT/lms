@@ -1223,6 +1223,116 @@ Update:
 
 
 
+//---------------------------------------------------------------------------------------------------------
+//                      Vimeo
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- Let's use vimeo: 
+      https://github.com/vimeo/player.js/
+
+- install it: 
+      npm install @vimeo/player
+
+- create a component to display vimeo content: 
+      components/Player.vue
+
+- fill the Player.vue, go and see it
+
+
+-----
+- we want to pass the id of the video from controller to > watch.blade to > Player.vue
+  .. passe the series in watch.blade: 
+            <vue-player defaul_lesson="{{$lesson}}"></vue-player>
+  .. then receive it using props() of Player.vue as a json object
+  .. then in data() parse it to lesson object again
+  .. then in html of Player.vue get bind it with the tag
+            <div :data-vimeo-id="lesson.video_id" data-vimeo-width="640" v-if="lesson" id="handstick"></div>
+
+
+
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Get ordered lessons for series + test that
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- make a function in series test: 
+      test_can_get_ordered_lessons_for_a_series()
+
+- fill it
+
+- make a function in Series.php model: 
+      getOrderedLessons()
+
+- Done!
+
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Next and previous button (test driven dev approach)
+//---------------------------------------------------------------------------------------------------------
+/*
+
+- make test, cuz we are test driven dev approach, so test then dev: 
+      php artisan make:test LessonTest --unit
+
+- fill it up
+
+- make getNextLesson() and getPrevLesson() in Lesson.php model
+
+- test all of that
+
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      display list of lesson in watch.blade.php : go and see it 
+//---------------------------------------------------------------------------------------------------------
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Vide ended notifiaction + sweetalert
+//---------------------------------------------------------------------------------------------------------
+/*
+- this for sweet notificaition: 
+      https://sweetalert.js.org/guides/
+-install it:
+      npm install sweetalert --save
+
+- in vimeo, from docs, get the function that inform you the video ended: 
+      https://github.com/vimeo/player.js/#ended  
+
+- in Player.vue put the function player.on('ended',....) in mount() 
+
+- import the sweetalert
+- when the video ended the displayVideoEndedAlert() will be called and alert  will be triggered
+
+- after the alert triggered, if the user click on the next notifiaction it move him to next
+
+- but we don't have the next lesson yet, you should pass it from watch.blade > Player 
+  .. (same way we pass values in Vimeo section, go check it up there)
+  
+-
+
+
+
+
+*/
+
+
+
+
+
+
+
 
 
 

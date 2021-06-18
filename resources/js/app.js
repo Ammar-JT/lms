@@ -58,6 +58,7 @@ window.handleError = function(error){
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+Vue.component('vue-player', require('./components/Player.vue').default);
 Vue.component('vue-noty', require('./components/Noty.vue').default);
 Vue.component('vue-login', require('./components/Login.vue').default);
 Vue.component('vue-lessons', require('./components/Lessons.vue').default);
