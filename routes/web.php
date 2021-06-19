@@ -40,6 +40,7 @@ Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 
 
 Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index'])->name('series.learning');
 Route::get('/series/{series}/lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'showLesson'])->name('series.watch');
+Route::post('/series/complete-lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'completeLesson'])->name('series.complete.lesson');
 
 
 
@@ -1319,13 +1320,82 @@ Update:
 
 - but we don't have the next lesson yet, you should pass it from watch.blade > Player 
   .. (same way we pass values in Vimeo section, go check it up there)
-  
+
 -
 
+*/
 
+
+//---------------------------------------------------------------------------------------------------------
+//                      Debug Laravel
+//---------------------------------------------------------------------------------------------------------
+/*
+- a better way to debug laravl is to use laravel debugbar: 
+      https://github.com/barryvdh/laravel-debugbar
+
+- install it: 
+      composer require barryvdh/laravel-debugbar --dev
+
+- open: 
+      http://lms/series/first-series/lesson/1
+
+- and at the bottom at the debuger, look at the queries section and find the duplicated queries,
+
+- Now solve that in watch.blade.php
+
+- solve the nextLesson prop that been passed to vue with if elese in watch.blade
+  .. now in vue also use if else in displayVideoEndedAlert()
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Feature test for complete lessons functionality
+//---------------------------------------------------------------------------------------------------------
+/*
+- make a test: 
+      php artisan make:test WatchSeriesTest
+
+- make a test function: 
+      test_a_user_can_complete_a_series()
+
+- make also this function but in UserTest.php unit test: 
+      test_can_check_if_user_has_completed_lesson()
+
+- .....
 
 
 */
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Display active lesson (using if else) and Completed lesson (using ajax)
+//---------------------------------------------------------------------------------------------------------
+/*
+- do you job in watch.blade.php for: active lesson
+
+- Use ajax in Player.vue to trigger when lesson completed
+
+- make completeLesson() method in Player.vue using axios
+
+-
+*/
+
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Display active lesson (using if else) and Completed lesson (using ajax)
+//---------------------------------------------------------------------------------------------------------
+/*
+- make a function in UserTest unit test: 
+      test_can_get_all_series_being_watched_by_user()
+
+- in learning
+*/
+
 
 
 

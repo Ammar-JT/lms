@@ -4653,6 +4653,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vimeo_player__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vimeo/player */ "./node_modules/@vimeo/player/dist/player.es.js");
 /* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
 /* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
 //
 //
 //
@@ -4660,6 +4662,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -4675,17 +4678,28 @@ __webpack_require__.r(__webpack_exports__);
     displayVideoEndedAlert: function displayVideoEndedAlert() {
       var _this = this;
 
-      sweetalert__WEBPACK_IMPORTED_MODULE_1___default()('Yaaay! You completed this lesson!').then(function () {
-        window.location = _this.next_lesson_url;
+      if (this.next_lesson_url) {
+        sweetalert__WEBPACK_IMPORTED_MODULE_1___default()('Yaaay! You completed this lesson!').then(function () {
+          window.location = _this.next_lesson_url;
+        });
+      } else {
+        sweetalert__WEBPACK_IMPORTED_MODULE_1___default()('Yaaay! You completed the whole series!');
+      }
+    },
+    completeLesson: function completeLesson() {
+      var _this2 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_2___default().post("/series/complete-lesson/".concat(this.lesson.id), {}).then(function (resp) {
+        _this2.displayVideoEndedAlert();
       });
     }
   },
   mounted: function mounted() {
-    var _this2 = this;
+    var _this3 = this;
 
     var player = new _vimeo_player__WEBPACK_IMPORTED_MODULE_0__.default('handstick');
     player.on('ended', function () {
-      _this2.displayVideoEndedAlert();
+      _this3.completeLesson();
     });
   }
 });

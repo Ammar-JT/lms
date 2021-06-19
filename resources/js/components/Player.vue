@@ -8,6 +8,7 @@
 <script>
 import Player from '@vimeo/player'
 import Swal from 'sweetalert'
+import Axios from 'axios'
 export default {
     props: [
         'defaul_lesson', // this value been received from watch.blade.php, it's a json object
@@ -21,10 +22,21 @@ export default {
     },
     methods:{
         displayVideoEndedAlert(){
-            Swal('Yaaay! You completed this lesson!')
-            .then(() => {
-                window.location = this.next_lesson_url
-            })
+            if(this.next_lesson_url){
+                Swal('Yaaay! You completed this lesson!')
+                .then(() => {
+                    window.location = this.next_lesson_url
+                })
+            }else{
+                Swal('Yaaay! You completed the whole series!');
+            }
+            
+        }, 
+        completeLesson(){
+            Axios.post(`/series/complete-lesson/${this.lesson.id}`, {})
+                 .then(resp => {
+                     this.displayVideoEndedAlert()
+                 })
         }
     },
 
@@ -32,7 +44,7 @@ export default {
         const player = new Player('handstick')
 
         player.on('ended', () => {
-            this.displayVideoEndedAlert();
+            this.completeLesson()
         })
     },
 

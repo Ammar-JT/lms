@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use App\Models\Lesson;
+use App\Models\Series;
 use Illuminate\Support\Facades\Redis;
 
 trait Learning {
@@ -72,5 +73,82 @@ trait Learning {
         return Lesson::whereIn('id', 
             $this->getCompletedLessonsForASeries($series)
         )->get();
+    }
+
+
+
+    public function hasCompletedLesson($lesson){
+        return in_array(
+            $lesson->id,
+            $this->getCompletedLessonsForASeries($lesson->series)
+        );
+    }
+
+    /*
+    public function seriesBeingWatched(){
+        //format of redis that we follow: 
+            //user:user_id:series:series_id
+        $keys = Redis::keys("user:{$this->id}:series:*");
+
+        $seriesIds = [];
+        foreach($keys as $key):
+            $recordArray = explode(':', $key); //this will result an array that has: ['user','user_id','series','series_id']
+            $seriesId = $recordArray[3]; // but we want only the series id, so we extract the index 3 value
+            //array of series ids: 
+            array_push($seriesIds, $seriesId);
+        endforeach;
+
+        //convert the array of ids to collection: 
+        $seriesCollection = collect($seriesIds);
+
+        //convert the collection of ids to collection of series and return it: 
+        return $seriesCollection->map(function($id){
+            return Series::find($id);
+        });
+    }
+
+    */
+    //These two methods refactor the commented function:
+    public function seriesBeingWatchedIds(){
+        //format of redis that we follow: 
+            //user:user_id:series:series_id
+        $keys = Redis::keys("user:{$this->id}:series:*");
+        dd($keys);
+
+        $seriesIds = [];
+        foreach($keys as $key):
+            $recordArray = explode(':', $key); //this will result an array that has: ['user','user_id','series','series_id']
+            $seriesId = $recordArray[3]; // but we want only the series id, so we extract the index 3 value
+            //array of series ids: 
+            array_push($seriesIds, $seriesId);
+        endforeach;
+
+        return $seriesIds;
+    }
+
+    public function seriesBeingWatched(){
+        return $seriesCollection = collect($this->seriesBeingWatchedIds())->map(function($id){
+            return Series::find($id);
+        });
+    }
+
+
+    public function getTotalNumberOfCompletedLessons(){
+        $keys = Redis::keys("user:{$this->id}:series:*");
+
+        $result = 0;
+        foreach($keys as $key):
+            //this line won't work..
+                //$result = $result + count(Redis::smembers($key));
+            //.. cuz it gives ths count(Redis::smembers("lmssaas_database_user:1:series:2"))
+            //.. which won't work cuz it shd be:  count(Redis::smembers(("user:1:series:2"))
+
+            //so, i replaced it with these three lines: 
+            $recordArray = explode(':', $key);
+            $seriesId = $recordArray[3];
+            $result = $result + count(Redis::smembers("user:{$this->id}:series:{$seriesId}"));
+        endforeach;
+
+        return $result;
     }
 }

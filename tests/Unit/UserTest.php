@@ -143,4 +143,98 @@ class UserTest extends TestCase
 
     }
 
+
+    public function test_can_check_if_user_has_completed_lesson(){
+            $this->flushRedis();
+            //user 
+            $user = User::factory()->create();
+
+            // series with its lessons 
+            $lesson = Lesson::factory()->create();
+            $lesson2 = Lesson::factory()->create(['series_id' => 1]);
+
+
+            //complete a lesson
+            $user->completeLesson($lesson);
+
+            //assert true,
+            $this->assertTrue($user->hasCompletedLesson($lesson));
+            $this->assertFalse($user->hasCompletedLesson($lesson2));
+
+
+    }
+
+    public function test_can_get_all_series_being_watched_by_user(){
+
+        $this->flushRedis();
+
+        //user 
+        $user = User::factory()->create();
+
+        //series with its lessons 
+        $lesson = Lesson::factory()->create();
+        $lesson2 = Lesson::factory()->create(['series_id' => 1]);
+        $lesson3 = Lesson::factory()->create();
+        $lesson4 = Lesson::factory()->create(['series_id' => 2]);
+        $lesson5 = Lesson::factory()->create();
+        $lesson6 = Lesson::factory()->create(['series_id' => 3]);
+
+        //complete lesson 1,2:
+        $user->completeLesson($lesson);
+        $user->completeLesson($lesson3);
+
+        $startedSeries = $user->seriesBeingWatched();
+        //collection of series
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $startedSeries);
+        $this->assertInstanceOf(Series::class, $startedSeries->random());
+
+        $idsOfStartedSeries = $startedSeries->pluck('id')->all();
+        $this->assertTrue(
+            in_array($lesson->series->id, $idsOfStartedSeries)
+        );
+
+        $this->assertTrue(
+            in_array($lesson3->series->id, $idsOfStartedSeries)
+        );
+
+        $this->assertFalse(
+            in_array($lesson5->series->id, $idsOfStartedSeries)
+        );
+
+
+        //assertions
+
+
+
+
+
+    }
+
+
+    public function test_can_get_number_of_completed_lesson_for_a_user(){
+        $this->withoutExceptionHandling();
+        $this->flushRedis();
+
+        //user 
+        $user = User::factory()->create();
+
+        //series with its lessons 
+        $lesson = Lesson::factory()->create();
+        $lesson2 = Lesson::factory()->create(['series_id' => 1]);
+        $lesson3 = Lesson::factory()->create();
+        $lesson4 = Lesson::factory()->create(['series_id' => 2]);
+        $lesson5 = Lesson::factory()->create(['series_id' => 2]);
+
+        //action
+        $user->completeLesson($lesson);
+        $user->completeLesson($lesson3);
+        $user->completeLesson($lesson5);
+        
+
+        
+        //assertion
+        $this->assertEquals(3, $user->getTotalNumberOfCompletedLessons());
+
+    }
+
 }
