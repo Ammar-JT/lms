@@ -150,4 +150,16 @@ trait Learning {
 
         return $result;
     }
+
+    public function getNextLessonToWatch($series){
+        //end() will gives you the last element of an array: 
+        $lessonIds = $this->getCompletedLessonsForASeries($series);
+
+        $lessonId = end($lessonIds);
+
+
+        $lastWatchedLesson =  Lesson::find($lessonId);
+
+        return $lastWatchedLesson->getNextLesson();
+    }
 }

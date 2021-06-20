@@ -24,8 +24,13 @@ class LessonTest extends TestCase
         $this->assertEquals($lesson3->getPrevLesson()->id, $lesson->id);
         $this->assertEquals($lesson->getPrevLesson()->id, $lesson2->id);
 
-        $this->assertNull($lesson2->getPrevLesson());
-        $this->assertNull($lesson3->getNextLesson());
+
+        
+        //$this->assertNull($lesson2->getPrevLesson());
+        //$this->assertNull($lesson3->getNextLesson());
+        //this is better for user experience:
+        $this->assertEquals($lesson2->getPrevLesson(), $lesson2);
+        $this->assertEquals($lesson3->getNextLesson(), $lesson3);
 
 
     }

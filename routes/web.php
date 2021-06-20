@@ -34,30 +34,31 @@ Route::get('/', function(){
     //dd(Redis::smembers('fronted-frameworks'));
 });
 */
-
-Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
-Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 'series'])->name('series');
-
-Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index'])->name('series.learning');
-Route::get('/series/{series}/lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'showLesson'])->name('series.watch');
-Route::post('/series/complete-lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'completeLesson'])->name('series.complete.lesson');
-
-Route::get('/profile/{user}', [App\Http\Controllers\ProfileController::class, 'index']);
-
-
-
 Auth::routes();
 Route::get('/logout', function(){
   auth()->logout();
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::class, 'index'])->name('confirm-email');
 
-Route::get('{series_by_id}', function (Series $series) {
-  dd($series);
+
+
+
+Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
+Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 'series'])->name('series');
+Route::get('/series', [App\Http\Controllers\FrontendController::class, 'showAllSeries'])->name('all-series');
+
+
+
+Route::middleware('auth')->group(function(){
+      Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index'])->name('series.learning');
+      Route::get('/series/{series}/lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'showLesson'])->name('series.watch');
+      Route::post('/series/complete-lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'completeLesson'])->name('series.complete.lesson');
+      Route::get('/profile/{user}', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile');
 });
+
+
 
 
 
@@ -1180,7 +1181,7 @@ Update:
 
 
 //---------------------------------------------------------------------------------------------------------
-//                      Single Series View
+//                      Single Series View + Custom Blade Directive for hasStartedSeries()
 //---------------------------------------------------------------------------------------------------------
 /*
 
@@ -1290,6 +1291,15 @@ Update:
 - make getNextLesson() and getPrevLesson() in Lesson.php model
 
 - test all of that
+
+-------
+
+- later we did an improvement to these functions, getNextLesson() and getPrevLesson() 
+  .. if you are in the first lesson then the prev won't be null, istead it will be the first also
+  .. same thing for the next.
+- So go and edit LessonTest.php
+
+- and then edit getNextLesson() in Lesson.php, so it never return null
 
 
 */
@@ -1423,6 +1433,60 @@ Update:
 
 - add ->filter(); in the function seriesBeingWatched() of the customized trait Learning.php
   ..this will filter the returning value to exclude the null values and records
+
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Custom blade admin directive
+//---------------------------------------------------------------------------------------------------------
+/*
+- before talking bout this topic, I have to put all the lessons in a middleware auth, 
+  .. cuz obvously if you are not logged in, you can't see the course content: 
+  .. so just an auth middleware: 
+      Route::middleware('auth')->group(function{...});
+
+- Now, the navbar display "create user" for any authed user, we only want that for the admin,
+  .. to do that we will use Custom blade admin directive, so we can use @admin >> @endadmin 
+  .. in any blade
+
+- .. go to: 
+      AppServiceProvider.php@boot()
+  use the blade facade: 
+      Blade::if();
+  Go and see it!!!
+
+
+- now you can use this in any blade: 
+      @admin
+
+- now use it for navbar and for what you need.
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Test the next lesson user should watch + frontend
+//---------------------------------------------------------------------------------------------------------
+/*
+- make this function in UserTest: 
+      test_can_get_lesson_to_be_watched_by_user()
+
+- create this function in learning: 
+      getNextLessonToWatch()
+
+--------
+- I editted some stuf in LessonTest.php and getNextLesson(), so we could make next things right
+
+- in WatchSeriesController.php@index, user should not redirected to first lesson,
+  .. but to the next lesson after the last lesson he watched, go fix it!
+
+- I also modify navbar and add all series link for guest and user (not just admin)
+
+
+
+
 
 
 */

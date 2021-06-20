@@ -29,16 +29,16 @@
            
           <!-- this $lesson object will be parsed automatically to json object -->
           <vue-player defaul_lesson="{{$lesson}}"
-              @if ($nextLesson)
+              @if ($nextLesson !== $lesson)
                  next_lesson_url="{{route('series.watch', ['series' => $series->slug, 'lesson' => $nextLesson->id])}}"
               @endif
           ></vue-player>
           <br>
-          @if ($prevLesson)
+          @if ($prevLesson !== $lesson)
             <a href="{{route('series.watch', ['series' => $series->slug, 'lesson' => $prevLesson->id])}}" class="btn btn-info pull-left">Previous Lesson</a>
           @endif
 
-          @if ($nextLesson)
+          @if ($nextLesson !== $lesson)
             <a href="{{route('series.watch', ['series' => $series->slug, 'lesson' => $nextLesson->id])}}" class="btn btn-info pull-right">Next Lesson</a>
           @endif
           

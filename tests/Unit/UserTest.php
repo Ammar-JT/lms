@@ -237,4 +237,33 @@ class UserTest extends TestCase
 
     }
 
+    public function test_can_get_lesson_to_be_watched_by_user(){
+        $this->flushRedis();
+
+        //user 
+        $user = User::factory()->create();
+
+        //series with its lessons 
+        $lesson = Lesson::factory()->create([ 'episode_number' => 100]);
+        $lesson2 = Lesson::factory()->create(['series_id' => 1, 'episode_number' => 200]);
+        $lesson3 = Lesson::factory()->create(['series_id' => 1, 'episode_number' => 300]);
+        $lesson4 = Lesson::factory()->create(['series_id' => 1, 'episode_number' => 400]);
+
+        //action
+        $user->completeLesson($lesson);
+        $user->completeLesson($lesson2);
+
+        //assertion
+        $nextLesson = $user->getNextLessonToWatch($lesson->series);
+        $this->assertEquals($lesson3->id, $nextLesson->id);
+
+        //action
+        $user->completeLesson($lesson3);
+
+        //assertion
+        $this->assertEquals($lesson4->id, $user->getNextLessonToWatch($lesson->series)->id);
+
+
+    }
+
 }
