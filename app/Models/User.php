@@ -67,6 +67,10 @@ class User extends Authenticatable
         return in_array($this->email, config('lms.administrators'));
     }
 
+    public function getRouteKeyName(){
+        return 'username';
+    }
+
 
     
 }

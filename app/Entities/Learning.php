@@ -113,7 +113,6 @@ trait Learning {
         //format of redis that we follow: 
             //user:user_id:series:series_id
         $keys = Redis::keys("user:{$this->id}:series:*");
-        dd($keys);
 
         $seriesIds = [];
         foreach($keys as $key):
@@ -129,7 +128,7 @@ trait Learning {
     public function seriesBeingWatched(){
         return $seriesCollection = collect($this->seriesBeingWatchedIds())->map(function($id){
             return Series::find($id);
-        });
+        })->filter();
     }
 
 

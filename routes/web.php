@@ -42,6 +42,8 @@ Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController
 Route::get('/series/{series}/lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'showLesson'])->name('series.watch');
 Route::post('/series/complete-lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'completeLesson'])->name('series.complete.lesson');
 
+Route::get('/profile/{user}', [App\Http\Controllers\ProfileController::class, 'index']);
+
 
 
 Auth::routes();
@@ -1395,6 +1397,36 @@ Update:
 
 - in learning
 */
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      The rest of functions of Learning.php and UserTest.php
+//---------------------------------------------------------------------------------------------------------
+/*
+- ........
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                      Displaying user profile
+//---------------------------------------------------------------------------------------------------------
+/*
+- make route for the profile: 
+      Route::get('/profile/{user}', [App\Http\Controllers\ProfileController::class, 'index']);
+- make controller: 
+      php artisan make:controller ProfileController
+- over ride the function getRouteKeyName() in User.php so you can get the user by username not id in routing
+
+- set up the profile.blade.php
+
+- add ->filter(); in the function seriesBeingWatched() of the customized trait Learning.php
+  ..this will filter the returning value to exclude the null values and records
+
+
+*/
+
 
 
 
