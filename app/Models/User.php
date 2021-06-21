@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Entities\Learning;
+use Laravel\Cashier\Billable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, Learning;
+    use HasFactory, Notifiable, Learning, Billable;
 
     /**
      * The attributes that are mass assignable.

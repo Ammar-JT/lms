@@ -21,6 +21,8 @@
     <link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
 
     @yield('scripts')
+    @yield('script')
+
   </head>
 
   <body>
@@ -122,5 +124,6 @@
     <script src="{{ asset('assets/js/thesaas.min.js') }}"></script>
     <script src="{{ asset('assets/js/script.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+
   </body>
 </html>

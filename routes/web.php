@@ -49,7 +49,20 @@ Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
 Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 'series'])->name('series');
 Route::get('/series', [App\Http\Controllers\FrontendController::class, 'showAllSeries'])->name('all-series');
 
+Route::get('/subscribe', function(){
+      return view('subscribe');
+});
 
+Route::post('/subscribe', function(){
+      //return request()->all();
+      //return auth()->user()->newSubscription('default', request('plan'))->create(request('price'));
+      return auth()->user()->subscriptions()->create([
+            'name' => request('plan'),
+            'stripe_id' => 'fake_stripe_id',
+            'stripe_status' => request('plan'),
+            'quantity' => 1
+      ]);
+});
 
 Route::middleware('auth')->group(function(){
       Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index'])->name('series.learning');
@@ -1484,12 +1497,72 @@ Update:
 
 - I also modify navbar and add all series link for guest and user (not just admin)
 
+*/
 
 
 
 
+//---------------------------------------------------------------------------------------------------------
+//                       Cashier: for Saas subscribtions and billing 
+//---------------------------------------------------------------------------------------------------------
+/*
+- Here we reached to the core idea of saas, a subscribtion and billing, all that can be done
+  .. with cashier!
+
+- this is the docs: 
+      https://laravel.com/docs/8.x/billing
+
+- install it: 
+      composer require laravel/cashier
+
+- do this to see migrations and you can edit it if you want: 
+      php artisan vendor:publish --tag="cashier-migrations"
+
+- add this to User.php: 
+      use Billable;
+
+- set up the these keys in .env: 
+      STRIPE_KEY=your-stripe-key
+      STRIPE_SECRET=your-stripe-secret
+
+- by default the currency is usd, i think you can change it in .env, unfortunatally there is no saudi riyal: 
+      CASHIER_CURRENCY=AED
+
+- migrate!
+
+
+- make account on stripe, you already did: 
+      https://dashboard.stripe.com/
+
+- make subscribtion plans, in the new version of stirpe there is no plans,
+  .. so you can make a product and put prices for the product,
+  .. so make a products and name them premium and standard and put prices
+
+
+- create a new component: Stripe.vue, and register it in app.js
+
+- create a view: subscribe.blade.php
+
+- make a route.
+
+- there is no documentation for stripe checkout form that you're using now, cuz it's an old one,
+  .. so, the only way to understand the code is from kati's videos: 
+            https://www.udemy.com/course/the-ultimate-advanced-laravel-pro-course-incl-vuejs-2/learn/lecture/8576566#content
+
+- the form form checkout has an email empty field, but we don't want that, we want it to be auto filled,
+  .. cuz we already has an email from auth.. so pass it from subscribe.blade >> Stripe.js
+
+
+- Because of Stripe updates, all document has changed for Cashier and Stripe have no 'plan' anymore,
+  .. but there is some ways to trick that like making product and then put price for it,
+  .. and make a subscription for that product. But I'm not willing to that, I will make the app
+  .. comunicate with stripe only to make payment, after the customer pays i will not comunicate with
+  .. stripe to register the subscription on their side, instead i will register the subscription
+  .. only in our app, why? cuz i'm not willing to learn a technology that i won't use (Stripe has no support for SR only AED)
+  .. So, most probably in a real project I will use Paytabs not stripe, that's why i'm doing these tricks.
 
 */
+
 
 
 
