@@ -61,12 +61,16 @@ class LoginController extends Controller
         //..which is composite a whole api resopone including status and so on
         //.. but here we will use this method cuz once you send 'ok' vueJs will know
         //.. that this user is successfully logged in:
-        return response()->json([
-            'status' => 'ok'
-        ]);
+        //But, before that.. check if the request is ajax: 
+
+        if(request()->ajax()){
+            return response()->json([
+                'status' => 'ok'
+            ]);
+        }
+
+        return redirect('/');
         
-        //test if laravel really call this function when login is successful
-        return 'login - successful';
     }
 
 

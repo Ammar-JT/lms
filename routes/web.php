@@ -1663,6 +1663,47 @@ Update:
 */
 
 
+//---------------------------------------------------------------------------------------------------------
+//                       Queueing laravel emails
+//---------------------------------------------------------------------------------------------------------
+/*
+- in ConfirmYourEmail.php, just implements ShouldQueue
+
+- update the queue driver in .env: 
+      QUEUE_DRIVER=database
+  instead of 
+      QUEUE_DRIVER=sync
+  so it will process the queued jobs in db instead of processing it in real time (sync)
+
+- now make a queue table: 
+      php artisan queue:table
+- migrate!
+
+- set up a queue worker: 
+      php artisan queue:work
+
+*/
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       Shared hosting is bullshit
+//---------------------------------------------------------------------------------------------------------
+/*
+- Why? cuz you need an active CMDs to make you app works perfectly,
+  .. until now you have to run 3 services: 
+      1- npm run watch 
+      2- redis server
+      3- php artisan queue:work
+
+- in shared hosting, your website will be static, and data won't proccess 
+  .. unless you made an http request, nothing will be proccessed in the 
+  .. background.
+
+  
+*/
+
+
 
 
 
