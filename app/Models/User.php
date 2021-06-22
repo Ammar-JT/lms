@@ -13,6 +13,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, Learning, Billable;
 
+    protected $with = ['subscriptions'];
+
     /**
      * The attributes that are mass assignable.
      *

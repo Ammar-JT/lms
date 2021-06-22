@@ -35,40 +35,31 @@ Route::get('/', function(){
 });
 */
 Auth::routes();
-Route::get('/logout', function(){
-  auth()->logout();
-});
+
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/register/confirm', [App\Http\Controllers\ConfirmEmailController::class, 'index'])->name('confirm-email');
-
-
 
 
 Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
 Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 'series'])->name('series');
 Route::get('/series', [App\Http\Controllers\FrontendController::class, 'showAllSeries'])->name('all-series');
 
-Route::get('/subscribe', function(){
-      return view('subscribe');
-});
-
-Route::post('/subscribe', function(){
-      //return request()->all();
-      //return auth()->user()->newSubscription('default', request('plan'))->create(request('price'));
-      return auth()->user()->subscriptions()->create([
-            'name' => request('plan'),
-            'stripe_id' => 'fake_stripe_id',
-            'stripe_status' => request('plan'),
-            'quantity' => 1
-      ]);
-});
 
 Route::middleware('auth')->group(function(){
+      Route::get('/logout', function(){
+            auth()->logout();
+      });
+
       Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index'])->name('series.learning');
       Route::get('/series/{series}/lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'showLesson'])->name('series.watch');
       Route::post('/series/complete-lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'completeLesson'])->name('series.complete.lesson');
       Route::get('/profile/{user}', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile');
+
+      Route::get('/subscribe', [App\Http\Controllers\SubscriptionsController::class, 'showSubscriptionForm']);
+      Route::post('/subscribe', [App\Http\Controllers\SubscriptionsController::class, 'subscribe']);
+      Route::post('/subscription/change', [App\Http\Controllers\SubscriptionsController::class, 'change'])->name('subscriptions.change');
+
 });
 
 
@@ -1560,6 +1551,114 @@ Update:
   .. stripe to register the subscription on their side, instead i will register the subscription
   .. only in our app, why? cuz i'm not willing to learn a technology that i won't use (Stripe has no support for SR only AED)
   .. So, most probably in a real project I will use Paytabs not stripe, that's why i'm doing these tricks.
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       Cashier: for Saas subscribtions and billing 
+//---------------------------------------------------------------------------------------------------------
+/*
+- make controller: 
+      php artisan make:controller SubscriptionsController
+
+- make routes, one for subscribe form and the other one for creating subscription in db
+
+- make functions for that routes in the controller 
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       Test Subscription
+//---------------------------------------------------------------------------------------------------------
+/*
+- make a feature test:  
+      php artisan make:test SubscriptionTest
+
+- make fake subscription, so it won't comunicate with stripe at all, but it would insert a record
+  .. in subscription table, make this function for that: 
+            fakeSubscribe()
+
+- make this function: 
+      test_a_user_without_a_plan_can_watch_free_lessons()
+
+- now run the test: 
+      ./vendor/bin/phpunit --filter test_a_user_without_a_plan_can_watch_free_lessons
+
+- modify the prev function to be:
+      test_a_user_without_a_plan_can_watch_premium_lessons()
+  go and see the code
+
+- now, in WatchSeriesContrller@showLesson(), put the condition for premium using: 
+      $user->subscribed('yearly')
+  that's for one plan (or product in the new stripe), if you want it for all plans: 
+      $user->subscribedToProduct($products, subscription = 'default) << not working, donno why
+
+
+- make a second function in SubscriptionTest: 
+      test_a_user_on_any_plan_can_watch_all_lessons()
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       CreateLesson.vue: premium lesson check box
+//---------------------------------------------------------------------------------------------------------
+/*
+- make a checkboxx for premium in CreateLesson.vue
+- bind it with data
+- now go to LessonsController@store+@update: ok, it's already handling all the inputs with all()
+
+- now refresh db so it includes the new column "premium" 
+
+*/
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       CreateLesson.vue: premium lesson check box
+//---------------------------------------------------------------------------------------------------------
+/*
+- make a checkboxx for premium in CreateLesson.vue
+- bind it with data
+- now go to LessonsController@store+@update: ok, it's already handling all the inputs with all()
+
+- now refresh db so it includes the new column "premium" 
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       Stripe.vue: make subscribing looks better: use sweet alert in Stripe.vue to alert user when he register
+//---------------------------------------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       User Profile
+//---------------------------------------------------------------------------------------------------------
+/*
+- put this propery in User.php: 
+      protected $with = ['subscriptions']
+
+- copy the prfile.blade.php view from kati's github
+
+- make a route: 
+      Route::post('/subscription/change')
+
+- make that route's function in the controller SubscriptionsController@change()
+
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------
+//                       Make notification better
+//---------------------------------------------------------------------------------------------------------
+/*
+- remove the template in Noty.vue
+- use sweet alert instead of the template
 
 */
 

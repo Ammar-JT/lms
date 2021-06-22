@@ -7,6 +7,7 @@
 
 <script>
 import Axios from 'axios'
+import Swal from "sweetalert"
 
 export default {
     props: ['email'],
@@ -17,12 +18,19 @@ export default {
             locale: 'auto',
             token(token) {
                 console.log(token.id)
+                //let's alert user using sweet alert: 
+                Swal({test: 'please wait while we subscribe you to a plan...', buttons: false});
                 Axios.post('/subscribe', {
                     stripeToken: token.id,
                     plan: window.stripePlan,
                     price: window.amount
                 }).then(resp => {
                     console.log(resp)
+                    //using sweet alret:
+                    Swal({test: 'Successfully subscribed', icon: 'success'})
+                    .then(() => {
+                        window.location = "";
+                    });
                 })
                 
             }
