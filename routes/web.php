@@ -45,18 +45,22 @@ Route::get('/', [App\Http\Controllers\FrontendController::class, 'welcome']);
 Route::get('/series/{series}', [App\Http\Controllers\FrontendController::class, 'series'])->name('series');
 Route::get('/series', [App\Http\Controllers\FrontendController::class, 'showAllSeries'])->name('all-series');
 
+Route::get('/logout', function(){
+      auth()->logout();
+      return redirect('/');
+});
 
 Route::middleware('auth')->group(function(){
-      Route::get('/logout', function(){
-            auth()->logout();
-      });
+      
 
       Route::get('/watch-series/{series}', [App\Http\Controllers\WatchSeriesController::class, 'index'])->name('series.learning');
       Route::get('/series/{series}/lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'showLesson'])->name('series.watch');
       Route::post('/series/complete-lesson/{lesson}', [App\Http\Controllers\WatchSeriesController::class, 'completeLesson'])->name('series.complete.lesson');
       Route::get('/profile/{user}', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile');
+      
+      Route::put('/profile/{user}/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
-      Route::get('/subscribe', [App\Http\Controllers\SubscriptionsController::class, 'showSubscriptionForm']);
+      Route::get('/subscribe', [App\Http\Controllers\SubscriptionsController::class, 'showSubscriptionForm'])->name('subscription');
       Route::post('/subscribe', [App\Http\Controllers\SubscriptionsController::class, 'subscribe']);
       Route::post('/subscription/change', [App\Http\Controllers\SubscriptionsController::class, 'change'])->name('subscriptions.change');
 
@@ -1700,7 +1704,7 @@ Update:
   .. unless you made an http request, nothing will be proccessed in the 
   .. background.
 
-  
+
 */
 
 

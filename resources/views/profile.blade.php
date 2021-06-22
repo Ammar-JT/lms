@@ -1,14 +1,17 @@
 @extends('layouts.app')
 
 @section('header')
+@php
+    $user = auth()->user();
+@endphp
 <header class="header header-inverse" style="background-color: #1ac28d">
   <div class="container text-center">
 
     <div class="row">
       <div class="col-12 col-lg-8 offset-lg-2">
 
-        <h1>{{auth()->user()->name}}</h1>
-        <p class="fs-20 opacity-70">{{auth()->user()->username}}</p>
+        <h1>{{$user->name}}</h1>
+        <p class="fs-20 opacity-70">{{$user->username}}</p>
         <br>
         <h1>{{ $user->getTotalNumberOfCompletedLessons() }}</h1>
         <p class="fs-20 opacity-70">Lessons completed</p>
@@ -57,7 +60,7 @@
 
 @if(auth()->id() === $user->id)
 @php 
-$subscription = auth()->user()->subscriptions->first();
+$subscription = $user->subscriptions->first();
 @endphp 
 <section class="section bg-gray" id="section-vtab">
     <div class="container">
@@ -82,7 +85,7 @@ $subscription = auth()->user()->subscriptions->first();
                 <h6>Payments & Subscriptions</h6>
                 </a>
             </li>
-            @if(auth()->user()->card_brand)
+            @if($user->card_brand)
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#settings-2">
                 <h6>Card details</h6>
@@ -97,13 +100,14 @@ $subscription = auth()->user()->subscriptions->first();
             <div class="tab-content">
             
             <div class="tab-pane fade show active" id="home-2">
-                <form action="{{ route('series.store')  }}" method="POST" enctype="multipart/form-data">
-                        {{ csrf_field() }}
+                <form action="{{ route('profile.update', $user->username)  }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
                         <div class="form-group">
-                            <input class="form-control form-control-lg" type="text" name="name" placeholder="Your name">
+                            <input value="{{$user->name}}" class="form-control form-control-lg" type="text" name="name" placeholder="Your name">
                         </div>
                         <div class="form-group">
-                            <input class="form-control form-control-lg" type="text" name="email" placeholder="Your email">
+                            <input value="{{$user->email}}" class="form-control form-control-lg" type="text" name="email" placeholder="Your email">
                         </div>
 
                         <button class="btn btn-lg btn-primary btn-block" type="submit">Save changes</button>
@@ -140,14 +144,14 @@ $subscription = auth()->user()->subscriptions->first();
                 </form>
             </div>
 
-            @if(auth()->user()->card_brand)
+            @if($user->card_brand)
             <div class="tab-pane fade" id="settings-2">
                 <div class="row">
                     <h2 class="text-center">
-                        Your current card: <span class="badge badge-sm badge-primary">{{ auth()->user()->card_brand }}:{{ auth()->user()->card_last_four }}</span>
+                        Your current card: <span class="badge badge-sm badge-primary">{{ $user->card_brand }}:{{ $user->card_last_four }}</span>
                     </h2>
                     <p class="ml-5 mt-5 text-center">
-                        <vue-update-card email="{{ auth()->user()->email }}"></vue-update-card>
+                        <vue-update-card email="{{ $user->email }}"></vue-update-card>
                     </p>
                 </div>
             </div>

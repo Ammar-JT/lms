@@ -15,11 +15,11 @@
             <br><br><br>
 
             <a class="btn btn-lg btn-round w-200 btn-primary mr-16" href="/series">View more</a>
-
             </div>
+            
 
             <div class="col-12 align-self-end text-center">
-            <a class="scroll-down-1 scroll-down-inverse" href="#" data-scrollto="section-intro"><span></span></a>
+              <a class="scroll-down-1 scroll-down-inverse" href="#series"><span></span></a>
             </div>
 
         </div>
@@ -30,7 +30,7 @@
 
 @section('content')
 
-    <section class="section bg-gray">
+    <section class="section bg-gray" id='series'>
         <div class="container">
         <header class="section-header">
             <small>lessons</small>

@@ -58,16 +58,21 @@
                 @endadmin 
                 
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('profile', auth()->user()->username) }}">Hey {{ auth()->user()->name  }}</a></li>
+                  <a class="nav-link" href="{{ route('profile', auth()->user()->username) }}">Hey {{ auth()->user()->name  }}</a>
+                  <div class="nav-submenu">
+                    <a class="nav-link" href="{{ route('profile', auth()->user()->username) }}">Profile</a>
+                    <a class="nav-link" href="{{ route('logout') }}">Logout</a>
+    
+                  </div>
+
                 </li>
+                <li class="nav-item"><a href="{{ route('all-series') }}" class="nav-link">All series</a></li>
+                <li class="nav-item"><a href="{{ route('subscription') }}" class="nav-link">Subscriptions</a></li>
 
-            @endauth
-            <li class="nav-item"><a href="{{ route('all-series') }}" class="nav-link">All series</a></li>
-
-            @guest
+            @else
               <li class="nav-item"><a href="{{ route('all-series') }}" class="nav-link">All series</a></li>
               <li class="nav-item"><a class="nav-link" href="javascript:;" data-toggle="modal" data-target="#loginModal">Login</a></li>
-            @endguest
+            @endauth
           </ul>
         </div>
 

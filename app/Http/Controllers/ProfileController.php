@@ -12,4 +12,12 @@ class ProfileController extends Controller
                 ->with('user', $user)
                 ->with('series', $user->seriesBeingWatched());
     }
+
+    public function update(User $user, Request $request){
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        $user->save();
+        return redirect()->back();
+    }
 }
